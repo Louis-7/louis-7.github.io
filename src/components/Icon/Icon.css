@@ -1,0 +1,16 @@
+.icon-xs svg {
+  font-size: 0.75rem;
+}
+
+.icon-sm svg {
+  font-size: 1rem;
+}
+
+.icon svg,
+.icon-md svg {
+  font-size: 1.5rem;
+}
+
+.icon-lg svg {
+  font-size: 2rem;
+}

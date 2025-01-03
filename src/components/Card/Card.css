@@ -1,0 +1,14 @@
+.card-container {
+  width: 80%;
+  padding: 3px 0.5rem;
+
+  .title {
+    font-size: 0.75rem;
+    color: var(--global-theme-secondary-font-color);
+  }
+
+  .text {
+    font-size: 0.95rem;
+    line-height: 0.95rem;
+  }
+}

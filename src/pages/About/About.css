@@ -1,0 +1,70 @@
+.page-container {
+  display: flex;
+  flex-direction: row;
+
+  .left-section {
+    flex-grow: 2;
+    order: 1;
+    padding-right: 0.75rem;
+  }
+  .right-section {
+    flex-basis: 270px;
+    order: 2;
+    min-width: 270px;
+  }
+}
+
+.self-intro {
+  text-wrap: pretty;
+}
+
+.job-title {
+  font-size: 0.88rem;
+  padding: 0;
+  color: var(--global-theme-secondary-font-color);
+}
+
+.project-title {
+  .project-duration {
+    color: var(--global-theme-color);
+  }
+  .project-name {
+    display: inline-block;
+    font-weight: 500;
+    margin-left: 1rem;
+  }
+
+  &:not(:first-of-type) {
+    margin-top: 1.5rem;
+  }
+}
+
+.profile-img {
+  display: flex;
+  justify-content: center;
+
+  img {
+    width: 70%;
+    border-radius: 100%;
+  }
+}
+
+.links {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 10px;
+  padding: 10px 0.5rem;
+
+  a {
+    text-decoration: none;
+    color: var(--global-theme-font-color);
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.skill-sets {
+  margin-top: 30px;
+}
