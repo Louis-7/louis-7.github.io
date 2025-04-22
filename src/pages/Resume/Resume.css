@@ -1,0 +1,14 @@
+.project-title {
+  .project-duration {
+    color: var(--global-theme-color);
+  }
+  .project-name {
+    display: inline-block;
+    font-weight: 500;
+    margin-left: 1rem;
+  }
+
+  &:not(:first-of-type) {
+    margin-top: 1.5rem;
+  }
+}

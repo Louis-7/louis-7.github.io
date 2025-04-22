@@ -1,3 +1,56 @@
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicLight.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicBook.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 450;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicMedium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicDemi.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicHeavy.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Futura PT';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Futura PT'), url('../assets/font/FuturaCyrillicExtraBold.ttf') format('truetype');
+}
+
+* {
+  font-family: 'Futura PT', Arial, sans-serif;
+}
+
 h1,
 h2,
 h3,

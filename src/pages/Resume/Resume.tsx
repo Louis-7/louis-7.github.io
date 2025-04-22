@@ -1,7 +1,8 @@
-export function CV() {
+import "./Resume.css";
+
+export function Resume() {
   return (
     <>
-      <h4>Projects</h4>
       <div className="project-title">
         <span className="project-duration">Jun, 2020 - present</span>
         <span className="project-name">Cytobank</span>
@@ -97,7 +98,7 @@ export function CV() {
       </div>
       <p>Data Science and Data Visualization project.</p>
       <ul>
-        <li>Led front-end team, used Grafana for data visualization.</li>
+        <li>Lead front-end team, used Grafana for data visualization.</li>
         <li>Developed Angular-based admin system.</li>
       </ul>
 

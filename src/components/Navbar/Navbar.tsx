@@ -18,7 +18,7 @@ export function Navbar() {
       <ul className="navbar-nav">
         <li className="nav-item">
           <NavLink to={`/`} className={getNavLinkClassName}>
-            about
+            about me
           </NavLink>
         </li>
         <li className="nav-item">
@@ -27,8 +27,8 @@ export function Navbar() {
           </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to={`/cv`} className={getNavLinkClassName}>
-            cv
+          <NavLink to={`/resume`} className={getNavLinkClassName}>
+            resume
           </NavLink>
         </li>
       </ul>

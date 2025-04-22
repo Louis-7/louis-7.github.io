@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import BlogListItem from '../BlogListItem';
 
+import './BlogList.css';
+
 export function BlogList() {
   const [blogList, setBlogList] = useState([]);
 
@@ -21,11 +23,11 @@ export function BlogList() {
     return () => {
       ignore = true;
     };
-  });
+  }, []);
 
   return (
-    <>
+    <div className="blog-list-container">
       <BlogListItem blogItems={blogList}></BlogListItem>
-    </>
+    </div>
   );
 }

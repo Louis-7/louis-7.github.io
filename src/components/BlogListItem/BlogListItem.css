@@ -1,0 +1,15 @@
+.blog-list-item {
+  .title {
+    color: var(--global-theme-color);
+    padding: 0;
+
+    a {
+      text-decoration: none;
+      color: var(--global-theme-color);
+    }
+  }
+
+  .description, .post-meta {
+    color: var(--global-theme-secondary-font-color);
+  }
+}

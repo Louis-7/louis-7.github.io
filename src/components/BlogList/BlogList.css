@@ -1,0 +1,5 @@
+.blog-list-container {
+  .blog-list-item:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}

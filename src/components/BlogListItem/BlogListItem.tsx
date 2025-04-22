@@ -1,6 +1,8 @@
+import './BlogListItem.css';
 import dayjs from 'dayjs';
 
 type Blog = {
+  id: number;
   type_of: string;
   title: string;
   description: string;
@@ -19,12 +21,12 @@ export function BlogListItem({ blogItems }: { blogItems: Array<never> }) {
       `${blog.public_reactions_count} reactions`,
     ].join(' · ');
     return (
-      <div>
-        <h3>
+      <div key={blog.id} id={blog.id.toString()} className='blog-list-item'>
+        <h5 className='title'>
           <a href={blog.url}>{blog.title}</a>
-        </h3>
-        <p className="description">{blog.description}</p>
-        <p className="post-meta">{postMeta}</p>
+        </h5>
+        {/* <span className="description">{blog.description}</span> */}
+        <span className="post-meta">{postMeta}</span>
       </div>
     );
   });
