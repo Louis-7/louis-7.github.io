@@ -3,7 +3,9 @@ import BlogList from '../../components/BlogList';
 export function Blog() {
   return (
     <>
-      <BlogList></BlogList>
+      <div className="page-container">
+        <BlogList></BlogList>
+      </div>
     </>
   );
 }
