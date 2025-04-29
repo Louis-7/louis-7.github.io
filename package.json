@@ -1,17 +1,24 @@
 {
   "name": "vite-react-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "homepage": "http://louis-7.github.io/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "dependencies": {
     "@ant-design/icons": "5.x",
     "dayjs": "^1.11.13",
+    "gh-pages": "^6.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0"
