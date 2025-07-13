@@ -1,14 +1,98 @@
-.project-title {
-  .project-duration {
-    color: var(--global-theme-color);
+.section-title {
+  font-size: 1.5rem;
+  font-weight: var(--title-emphasize-weight);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.project-list,
+.work-experience {
+  padding-left: 1.5rem;
+}
+
+.project-list {
+  .project-title {
+    .project-duration {
+      color: var(--global-theme-primary-color);
+    }
+
+    .project-name {
+      display: inline-block;
+      font-weight: var(--normal-emphasize-weight);
+      margin-left: 1rem;
+    }
+
+    &:not(:first-of-type) {
+      margin-top: 1.5rem;
+    }
   }
-  .project-name {
-    display: inline-block;
-    font-weight: 500;
-    margin-left: 1rem;
+}
+
+
+.personal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .my-name {
+    font-size: 3rem;
+    font-weight: var(--normal-emphasize-weight);
+    width: 100%;
   }
 
-  &:not(:first-of-type) {
-    margin-top: 1.5rem;
+  .personal-info-cols {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .personal-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.work-experience {
+  .work-experience-title {
+    display: flex;
+    gap: 0.5rem;
+
+    .work-duration {
+      color: var(--global-theme-primary-color);
+    }
+
+    .work-company {
+      font-weight: var(--normal-emphasize-weight);
+      ;
+    }
+
+    .work-position {
+      .as {
+        color: var(--global-theme-primary-color);
+        font-weight: var(--normal-emphasize-weight);
+        ;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.education-list {
+  .education-title {
+    display: flex;
+    gap: 0.5rem;
+
+    .education-duration {
+      color: var(--global-theme-primary-color);
+    }
+
+    .education-name {
+      font-weight: var(--normal-emphasize-weight);
+    }
+
+    .education-major {
+      font-style: italic;
+      color: var(--global-theme-primary-color);
+    }
   }
 }

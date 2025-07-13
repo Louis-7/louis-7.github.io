@@ -1,0 +1,5 @@
+.color-list {
+    ::marker {
+        color: var(--global-theme-primary-color);
+    }
+}

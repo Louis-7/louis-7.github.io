@@ -12,11 +12,11 @@
       text-decoration: none;
 
       &.active {
-        color: var(--global-theme-color);
+        color: var(--global-theme-primary-color);
       }
 
       &:hover {
-        color: var(--global-theme-color);
+        color: var(--global-theme-primary-color);
         cursor: pointer;
       }
     }

@@ -1,5 +1,6 @@
 @import './styles/reset.css';
 @import './styles/color.css';
+@import './styles/typography.css';
 @import './styles/general.css';
 
 * {
@@ -9,4 +10,9 @@
 body {
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
+}
+
+a:visited,
+a:link {
+  color: var(--global-theme-secondary-color);
 }

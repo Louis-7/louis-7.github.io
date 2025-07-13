@@ -1,11 +1,11 @@
 .blog-list-item {
   .title {
-    color: var(--global-theme-color);
+    color: var(--global-theme-primary-color);
     padding: 0;
 
     a {
       text-decoration: none;
-      color: var(--global-theme-color);
+      color: var(--global-theme-primary-color);
     }
   }
 

@@ -47,7 +47,7 @@
 
   .dash-line {
     fill: none;
-    stroke: var(--global-theme-color);
+    stroke: var(--global-theme-primary-color);
     stroke-width: 1;
     stroke-dasharray: 5, 5;
 
@@ -83,7 +83,7 @@
     width: 300px;
 
     .tag {
-      color: var(--global-theme-color);
+      color: var(--global-theme-primary-color);
       margin-bottom: 10px;
     }
 
@@ -155,7 +155,7 @@
 
 .project-title {
   .project-duration {
-    color: var(--global-theme-color);
+    color: var(--global-theme-primary-color);
   }
   .project-name {
     display: inline-block;
