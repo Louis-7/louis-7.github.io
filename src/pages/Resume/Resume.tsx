@@ -41,17 +41,16 @@ export function Resume() {
           <p>Cytobank is a cloud-based Flow Cytometry data analysis platform.</p>
           <ul>
             <li>
-              Cloud based file upload (S3, API Gateway, Lambda, DynamoDB, Step
-              Functions)
+              Cloud-based file upload (S3, API Gateway, Lambda, DynamoDB, Step Functions)
             </li>
-            <li>Front-end deelopment based on Backbone.js + Marionette.js.</li>
-            <li>Back-end development based on Ruby on Rails.</li>
+            <li>Front-end development using Backbone.js and Marionette.js.</li>
+            <li>Back-end development using Ruby on Rails.</li>
             <li>
-              Data visualization & analysis, implement Swarm plot, Volcano plot, Bar chart with Plotly.js.
+              Data visualization & analysis: implemented Swarm plot, Volcano plot, and Bar chart with Plotly.js.
             </li>
-            <li> Design and impeplement multiple modules. e.g, aduit log, electronic signature, etc.</li>
+            <li>Designed and implemented multiple modules, e.g., audit log, electronic signature, etc.</li>
             <li>
-              Maintainer of public API.(
+              Maintainer of public API (
               <a href="https://developer.cytobank.org/" target="_blank">
                 Cytobank public API
               </a>{' '}
@@ -72,17 +71,14 @@ export function Resume() {
           <p>A Software Lifecycle Management tool on IBM i</p>
           <ul>
             <li>
-              Developed Web Portal using AngularJS for modern UI and user
-              experience.
+              Developed a web portal using AngularJS for a modern UI and user experience.
             </li>
             <li>Full-stack development with JavaScript.</li>
             <li>
-              Develop a Node.js backend service compatible with Linux and IBM i
-              platforms.
+              Developed a Node.js backend service compatible with Linux and IBM i platforms.
             </li>
             <li>
-              Designed middle layer to integrate various components of the product
-              family.
+              Designed a middle layer to integrate various components of the product family.
             </li>
           </ul>
           <div className="project-title">
@@ -92,7 +88,7 @@ export function Resume() {
           <p><a href='https://github.com/zowe/zlux-editor' target='_blank'>Zowe Code Editor</a>, a plug-in of Zowe running on IBM mainframe.</p>
           <ul>
             <li>
-              Responsible for front-end architecture and Node.js application.
+              Responsible for front-end architecture and Node.js application development.
             </li>
             <li>Developed core engine, file system, and menu system.</li>
             <li>Integrated language server with Monaco Editor.</li>
@@ -102,11 +98,10 @@ export function Resume() {
             <span className="project-duration">Mar, 2018 – Apr, 2018</span>
             <span className="project-name">Web Portal React Native</span>
           </div>
-          <p>Transplanted Web Portal to the mobile platform.</p>
+          <p>Ported the web portal to the mobile platform.</p>
           <ul>
             <li>
-              Solely responsible for architecture and development using Typescript
-              and React Native.
+              Solely responsible for architecture and development using TypeScript and React Native.
             </li>
             <li>Implemented voice command and QR code sharing features.</li>
           </ul>
@@ -115,33 +110,33 @@ export function Resume() {
             <span className="project-duration">Oct, 2015 – Nov, 2017</span>
             <span className="project-name">Design Studio</span>
           </div>
-          <p>Build a low code mobile app platform for Ionic.</p>
+          <p>Built a low-code mobile app platform for Ionic.</p>
           <ul>
             <li>
               Full-stack development using Angular, Node.js, Webpack, and MongoDB.
             </li>
-            <li>Server maintenance and DevOps.</li>
+            <li>Handled server maintenance and DevOps.</li>
           </ul>
 
           <div className="project-title">
             <span className="project-duration">Jun, 2017 - Aug, 2017</span>
             <span className="project-name">SOH</span>
           </div>
-          <p>Data Science and Data Visualization project.</p>
+          <p>Data science and data visualization project.</p>
           <ul>
-            <li>Lead front-end team, used Grafana for data visualization.</li>
-            <li>Developed Angular-based admin system.</li>
+            <li>Led the front-end team and used Grafana for data visualization.</li>
+            <li>Developed an Angular-based admin system.</li>
           </ul>
 
           <div className="project-title">
             <span className="project-duration">Sep, 2014 – Aug, 2015</span>
             <span className="project-name">Self Engagement Portal</span>
           </div>
-          <p>ASP .NET website maintenance and hybrid mobile project.</p>
+          <p>ASP.NET website maintenance and hybrid mobile project.</p>
           <ul>
-            <li>Daily maintenance, automation scripts, and bug-fix.</li>
-            <li>Moved web features to mobile for better user experience.</li>
-            <li>Scrum Master, tracked project progress.</li>
+            <li>Handled daily maintenance, automation scripts, and bug fixes.</li>
+            <li>Migrated web features to mobile for a better user experience.</li>
+            <li>Served as Scrum Master and tracked project progress.</li>
           </ul>
         </div>
 
@@ -150,17 +145,17 @@ export function Resume() {
           <div className="work-experience-title">
             <span className="work-duration">Jun, 2020 – Present</span>
             <span className="work-company">Beckman Coulter</span>
-            <span className="work-position"><span className='as'>as</span>Software Engineer</span>
+            <span className="work-position">Senior Software Engineer</span>
           </div>
           <div className="work-experience-title">
             <span className="work-duration">Nov, 2017 - May, 2020</span>
             <span className="work-company">Rocket Software</span>
-            <span className="work-position"><span className='as'>as</span>Software Engineer</span>
+            <span className="work-position">Software Engineer</span>
           </div>
           <div className="work-experience-title">
             <span className="work-duration">Aug, 2014 - Nov, 2017</span>
             <span className="work-company">Accenture</span>
-            <span className="work-position"><span className='as'>as</span>Senior Software Analyst</span>
+            <span className="work-position">Senior Software Analyst</span>
           </div>
         </div>
 
@@ -179,7 +174,7 @@ export function Resume() {
           <div className="education-title">
             <span className="education-duration">2010 - 2014</span>
             <span className="education-name">Dalian Neusoft University of Information</span>
-            <span className="education-major">bachelor of E-commerce</span>
+            <span className="education-major">Bachelor of E-commerce</span>
           </div>
         </div>
       </div>
