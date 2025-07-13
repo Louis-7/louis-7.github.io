@@ -5,7 +5,7 @@ import Icon from '../../components/Icon';
 
 export function About() {
   return (
-    <>
+    <div className="page-about">
       <div className="background"></div>
       <div className="profile-container">
         <div className="profile-img">
@@ -58,6 +58,6 @@ export function About() {
 
         </div>
       </div>
-    </>
+    </div>
   );
 }

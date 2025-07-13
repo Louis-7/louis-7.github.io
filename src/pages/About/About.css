@@ -1,28 +1,33 @@
-.background {
-  background: linear-gradient(-45deg, #c4f6fd, #ffdbdb);
-	background-size: 200% 200%;
-	animation: gradient 5s ease infinite;
-	height: 100vh;
-  width: 100vw;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
+.page-about {
+  user-select: none;
 
-@keyframes gradient {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
-}
+  .background {
+    background: linear-gradient(-45deg, #c4f6fd, #ffdbdb);
+    background-size: 200% 200%;
+    animation: gradient 5s ease infinite;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
 
-.profile-container {
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .profile-container {
     position: absolute;
     height: 240px;
     width: 800px;
@@ -31,102 +36,104 @@
     inset: 0px;
     margin: auto;
 
-  .profile-img {
-    position: absolute;
-    top: 0;
-    left: 300px;
-    width: 200px;
-    height: 200px;
+    .profile-img {
+      position: absolute;
+      top: 0;
+      left: 300px;
+      width: 200px;
+      height: 200px;
 
-    img {
-      width: 100%;
-      height: 100%;
-      border-radius: 100%;
-    }
-  }
-
-  .dash-line {
-    fill: none;
-    stroke: var(--global-theme-primary-color);
-    stroke-width: 1;
-    stroke-dasharray: 5, 5;
-
-    width: 300px;
-    transition: fill 0.4s ease;
-  }
-
-  .dash-line.left {
-    position: absolute;
-    left: 0px;
-    top: 150px;
-  }
-  .dash-line.right {
-    position: absolute;
-    left: 500px;
-    top: 40px;
-  }
-
-  .my-name {
-    position: absolute;
-    top: -13px;
-    left: 640px;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--global-theme-font-color);
-    text-align: right;
-  }
-
-  .self-intro {
-    position: absolute;
-    top: 100px;
-    left: 0px;
-    width: 300px;
-
-    .tag {
-      color: var(--global-theme-primary-color);
-      margin-bottom: 10px;
-    }
-
-    div {
-      font-size: 0.75rem;
-    }
-  }
-
-  .links {
-    position:absolute;
-    top: 170px;
-    left: 0px;
-    display: inline-grid;
-    grid-auto-flow: column;
-    gap: 10px;
-    padding: 10px 0.5rem;
-
-    a {
-      text-decoration: none;
-      color: var(--global-theme-font-color);
-
-      &:hover {
-        cursor: pointer;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
       }
     }
 
-    .dev-to-logo {
-      width: 30px;
+    .dash-line {
+      fill: none;
+      stroke: var(--global-theme-primary-color);
+      stroke-width: 1;
+      stroke-dasharray: 5, 5;
+
+      width: 300px;
+      transition: fill 0.4s ease;
     }
-  }
 
-  .click-me {
-    position: absolute;
-    top: 40px;
-    left:760px;
-    display: inline-grid;
-    grid-auto-flow: column;
-    gap: 10px;
-    padding: 10px 0.5rem;
+    .dash-line.left {
+      position: absolute;
+      left: 0px;
+      top: 150px;
+    }
 
-    span {
-      &:hover {
-        cursor: pointer;
+    .dash-line.right {
+      position: absolute;
+      left: 500px;
+      top: 40px;
+    }
+
+    .my-name {
+      position: absolute;
+      top: -13px;
+      left: 640px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--global-theme-font-color);
+      text-align: right;
+    }
+
+    .self-intro {
+      position: absolute;
+      top: 100px;
+      left: 0px;
+      width: 300px;
+
+      .tag {
+        color: var(--global-theme-primary-color);
+        margin-bottom: 10px;
+      }
+
+      div {
+        font-size: 0.75rem;
+      }
+    }
+
+    .links {
+      position: absolute;
+      top: 170px;
+      left: 0px;
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: 10px;
+      padding: 10px 0.5rem;
+
+      a {
+        text-decoration: none;
+        color: var(--global-theme-font-color);
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      .dev-to-logo {
+        width: 30px;
+      }
+    }
+
+    .click-me {
+      position: absolute;
+      top: 40px;
+      left: 760px;
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: 10px;
+      padding: 10px 0.5rem;
+
+      span {
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
   }

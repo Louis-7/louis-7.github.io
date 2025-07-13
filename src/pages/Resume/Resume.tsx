@@ -16,7 +16,7 @@ export function Resume() {
     'Scrum Alliance - CSPO',
   ];
   return (
-    <>
+    <div className="page-resume">
       <div className="page-container">
         <div className='personal-info'>
           <div className='my-name'>Louis Liu</div>
@@ -183,6 +183,6 @@ export function Resume() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
