@@ -23,7 +23,7 @@ export function Resume() {
           <div className="personal-info-cols">
             <div className="personal-info-col">
               <div>A web developer</div>
-              <div>Born in Jun, 1991</div>
+              <div>Quick learner 🚀</div>
             </div>
             <div className="personal-info-col">
               <div>Living in Dalian, China</div>
