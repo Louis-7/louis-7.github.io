@@ -26,11 +26,6 @@ export function Navbar() {
             blog
           </NavLink>
         </li>
-        <li className="nav-item">
-          <NavLink to={`/resume`} className={getNavLinkClassName}>
-            resume
-          </NavLink>
-        </li>
       </ul>
     </div>
   );

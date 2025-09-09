@@ -11,44 +11,49 @@ export function Resume() {
     'Hybrid, Electron',
     'Git, Docker, Linux',
   ];
-  const certificates = [
-    'Scrum Alliance – CSM',
-    'Scrum Alliance - CSPO',
-  ];
+  const certificates = ['Scrum Alliance – CSM', 'Scrum Alliance - CSPO'];
   return (
     <div className="page-resume">
       <div className="page-container">
-        <div className='personal-info'>
-          <div className='my-name'>Louis Liu</div>
+        <div className="personal-info">
+          <div className="my-name">Louis Liu</div>
           <div className="personal-info-cols">
             <div className="personal-info-col">
               <div>A web developer</div>
               <div>Quick learner 🚀</div>
             </div>
             <div className="personal-info-col">
-              <div>Living in Dalian, China</div>
-              <div>louisgh.cn@gmail.com</div>
+              <div>
+                <a href="mailto:louisgh.cn@gmail.com">louisgh.cn@gmail.com</a>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className='section-title'>Projects</div>
-        <div className='project-list'>
+        <div className="section-title">Projects</div>
+        <div className="project-list">
           <div className="project-title">
             <span className="project-duration">Jun, 2020 - present</span>
             <span className="project-name">Cytobank</span>
           </div>
-          <p>Cytobank is a cloud-based Flow Cytometry data analysis platform.</p>
+          <p>
+            Cytobank is a cloud-based Flow Cytometry data analysis platform.
+          </p>
           <ul>
             <li>
-              Cloud-based file upload (S3, API Gateway, Lambda, DynamoDB, Step Functions)
+              Cloud-based file upload (S3, API Gateway, Lambda, DynamoDB, Step
+              Functions)
             </li>
             <li>Front-end development using Backbone.js and Marionette.js.</li>
             <li>Back-end development using Ruby on Rails.</li>
             <li>
-              Data visualization & analysis: implemented Swarm plot, Volcano plot, and Bar chart with Plotly.js.
+              Data visualization & analysis: implemented Swarm plot, Volcano
+              plot, and Bar chart with Plotly.js.
             </li>
-            <li>Designed and implemented multiple modules, e.g., audit log, electronic signature, etc.</li>
+            <li>
+              Designed and implemented multiple modules, e.g., audit log,
+              electronic signature, etc.
+            </li>
             <li>
               Maintainer of public API (
               <a href="https://developer.cytobank.org/" target="_blank">
@@ -71,24 +76,33 @@ export function Resume() {
           <p>A Software Lifecycle Management tool on IBM i</p>
           <ul>
             <li>
-              Developed a web portal using AngularJS for a modern UI and user experience.
+              Developed a web portal using AngularJS for a modern UI and user
+              experience.
             </li>
             <li>Full-stack development with JavaScript.</li>
             <li>
-              Developed a Node.js backend service compatible with Linux and IBM i platforms.
+              Developed a Node.js backend service compatible with Linux and IBM
+              i platforms.
             </li>
             <li>
-              Designed a middle layer to integrate various components of the product family.
+              Designed a middle layer to integrate various components of the
+              product family.
             </li>
           </ul>
           <div className="project-title">
             <span className="project-duration">May, 2018 – August, 2018</span>
             <span className="project-name">Code Editor</span>
           </div>
-          <p><a href='https://github.com/zowe/zlux-editor' target='_blank'>Zowe Code Editor</a>, a plug-in of Zowe running on IBM mainframe.</p>
+          <p>
+            <a href="https://github.com/zowe/zlux-editor" target="_blank">
+              Zowe Code Editor
+            </a>
+            , a plug-in of Zowe running on IBM mainframe.
+          </p>
           <ul>
             <li>
-              Responsible for front-end architecture and Node.js application development.
+              Responsible for front-end architecture and Node.js application
+              development.
             </li>
             <li>Developed core engine, file system, and menu system.</li>
             <li>Integrated language server with Monaco Editor.</li>
@@ -101,7 +115,8 @@ export function Resume() {
           <p>Ported the web portal to the mobile platform.</p>
           <ul>
             <li>
-              Solely responsible for architecture and development using TypeScript and React Native.
+              Solely responsible for architecture and development using
+              TypeScript and React Native.
             </li>
             <li>Implemented voice command and QR code sharing features.</li>
           </ul>
@@ -113,7 +128,8 @@ export function Resume() {
           <p>Built a low-code mobile app platform for Ionic.</p>
           <ul>
             <li>
-              Full-stack development using Angular, Node.js, Webpack, and MongoDB.
+              Full-stack development using Angular, Node.js, Webpack, and
+              MongoDB.
             </li>
             <li>Handled server maintenance and DevOps.</li>
           </ul>
@@ -124,7 +140,9 @@ export function Resume() {
           </div>
           <p>Data science and data visualization project.</p>
           <ul>
-            <li>Led the front-end team and used Grafana for data visualization.</li>
+            <li>
+              Led the front-end team and used Grafana for data visualization.
+            </li>
             <li>Developed an Angular-based admin system.</li>
           </ul>
 
@@ -134,14 +152,18 @@ export function Resume() {
           </div>
           <p>ASP.NET website maintenance and hybrid mobile project.</p>
           <ul>
-            <li>Handled daily maintenance, automation scripts, and bug fixes.</li>
-            <li>Migrated web features to mobile for a better user experience.</li>
+            <li>
+              Handled daily maintenance, automation scripts, and bug fixes.
+            </li>
+            <li>
+              Migrated web features to mobile for a better user experience.
+            </li>
             <li>Served as Scrum Master and tracked project progress.</li>
           </ul>
         </div>
 
-        <div className='section-title'>Work Experience</div>
-        <div className='work-experience'>
+        <div className="section-title">Work Experience</div>
+        <div className="work-experience">
           <div className="work-experience-title">
             <span className="work-duration">Jun, 2020 – Present</span>
             <span className="work-company">Beckman Coulter</span>
@@ -159,21 +181,23 @@ export function Resume() {
           </div>
         </div>
 
-        <div className='section-title'>Skills</div>
-        <div className='skill-list'>  
+        <div className="section-title">Skills</div>
+        <div className="skill-list">
           <List items={skills} />
         </div>
 
-        <div className='section-title'>Certificates</div>
-        <div className='certificate-list'>
+        <div className="section-title">Certificates</div>
+        <div className="certificate-list">
           <List items={certificates} />
         </div>
 
-        <div className='section-title'>Education</div>
-        <div className='education-list'>
+        <div className="section-title">Education</div>
+        <div className="education-list">
           <div className="education-title">
             <span className="education-duration">2010 - 2014</span>
-            <span className="education-name">Dalian Neusoft University of Information</span>
+            <span className="education-name">
+              Dalian Neusoft University of Information
+            </span>
             <span className="education-major">Bachelor of E-commerce</span>
           </div>
         </div>
