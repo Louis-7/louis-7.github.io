@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pixel Farm Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #2c3e50;
+            --modal-bg: #fdf1ce;
+            --modal-border: #8b4513;
+            --text-color: #4a3b2a;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Press Start 2P', cursive;
+            touch-action: none; /* Prevent pull-to-refresh on mobile */
+        }
+
+        #gameCanvas {
+            display: block;
+            image-rendering: pixelated; /* Crucial for the retro look */
+        }
+
+        /* UI Overlay for Interactions */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Interaction Prompt (e.g. "Press Space") */
+        #interaction-prompt {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+            animation: bounce 1s infinite;
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Content Modal */
+        #modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            z-index: 100;
+        }
+
+        #modal-content {
+            width: 80%;
+            max-width: 600px;
+            max-height: 80%;
+            background-color: var(--modal-bg);
+            border: 4px solid var(--modal-border);
+            box-shadow: 0 0 0 4px #d4a373, 0 10px 20px rgba(0,0,0,0.5);
+            border-radius: 4px;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+            color: var(--text-color);
+            line-height: 1.6;
+            font-family: 'Courier New', Courier, monospace; /* Easier to read for long text */
+            font-weight: bold;
+        }
+
+        #modal-content h2 {
+            font-family: 'Press Start 2P', cursive;
+            color: #d35400;
+            border-bottom: 2px dashed #8b4513;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        #modal-content h3 {
+            font-size: 16px;
+            color: #8b4513;
+            margin-bottom: 5px;
+        }
+
+        #modal-content p, #modal-content ul {
+            font-size: 14px;
+        }
+
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            border: 2px solid #c0392b;
+            color: white;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 26px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        #close-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Touch Controls */
+        #mobile-controls {
+            display: none; /* Shown via JS on touch devices */
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            height: 150px;
+            pointer-events: none;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .d-pad {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            height: 120px;
+            pointer-events: auto;
+        }
+
+        .d-btn {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+        }
+        .d-btn:active { background: rgba(255, 255, 255, 0.6); }
+        
+        .d-up { top: 0; left: 40px; }
+        .d-down { bottom: 0; left: 40px; }
+        .d-left { top: 40px; left: 0; }
+        .d-right { top: 40px; right: 0; }
+
+        .action-btn {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 200, 0, 0.4);
+            border: 2px solid rgba(255, 200, 0, 0.6);
+            border-radius: 50%;
+            pointer-events: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+            user-select: none;
+        }
+        .action-btn:active { background: rgba(255, 200, 0, 0.7); }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -5px); }
+        }
+
+        /* Scrollbar styling for modal */
+        #modal-content::-webkit-scrollbar {
+            width: 10px;
+        }
+        #modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        #modal-content::-webkit-scrollbar-thumb {
+            background: #8b4513;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="ui-layer">
+        <div id="interaction-prompt">Press SPACE to Interact</div>
+        
+        <div id="mobile-controls">
+            <div class="d-pad">
+                <div class="d-btn d-up" id="btn-up"></div>
+                <div class="d-btn d-down" id="btn-down"></div>
+                <div class="d-btn d-left" id="btn-left"></div>
+                <div class="d-btn d-right" id="btn-right"></div>
+            </div>
+            <div class="action-btn" id="btn-action">A</div>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="modal-content">
+            <div id="close-btn">X</div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * CONFIGURATION & STATE
+         */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const promptEl = document.getElementById('interaction-prompt');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalBody = document.getElementById('modal-body');
+        const closeBtn = document.getElementById('close-btn');
+
+        // Game constants
+        const TILE_SIZE = 48; // Base unit size
+        const PLAYER_SPEED = 4;
+        const PLAYER_SIZE = 32;
+        const COLORS = {
+            grass: '#76c758',
+            grassDark: '#66b04a',
+            dirt: '#8b5e3c',
+            wood: '#a05a2c',
+            woodDark: '#6d3d1e',
+            roof: '#c0392b',
+            water: '#3498db',
+            waterDeep: '#2980b9'
+        };
+
+        // Game State
+        let gameState = {
+            player: { x: 0, y: 0, w: PLAYER_SIZE, h: PLAYER_SIZE, dir: 'down', frame: 0, isMoving: false },
+            keys: { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, " ": false, Enter: false },
+            camera: { x: 0, y: 0 },
+            interactionTarget: null,
+            isModalOpen: false,
+            lastTime: 0
+        };
+
+        // Content Data
+        const ZONES = [
+            {
+                id: 'house',
+                x: 0, y: 0, w: 160, h: 140,
+                type: 'building',
+                label: 'My House',
+                interactDist: 60,
+                collisionBox: { x: 10, y: 40, w: 140, h: 90 }, // Physical blocked area
+                door: { x: 70, y: 130 }, // Interaction point
+                content: `
+                    <h2>About Me</h2>
+                    <p>Hi! I'm <strong>Alex</strong>, a passionate Full Stack Developer who loves building interactive web experiences.</p>
+                    <p>Just like a farmer tends to their crops, I tend to my code—cultivating clean, efficient, and scalable solutions.</p>
+                    <h3>Skills</h3>
+                    <ul>
+                        <li>JavaScript (React, Node.js)</li>
+                        <li>Python (Django, Flask)</li>
+                        <li>Database Design (SQL, NoSQL)</li>
+                        <li>Pixel Art & Game Dev</li>
+                    </ul>
+                    <p>Welcome to my little corner of the internet!</p>
+                `
+            },
+            {
+                id: 'garden',
+                x: -250, y: 50, w: 180, h: 150,
+                type: 'garden',
+                label: 'Projects Patch',
+                interactDist: 80,
+                collisionBox: { x: 0, y: 0, w: 180, h: 150 },
+                door: { x: 90, y: 160 },
+                content: `
+                    <h2>Projects Garden</h2>
+                    <p>Here is what I've been growing lately:</p>
+                    
+                    <h3>🌾 Crop Analyzer AI</h3>
+                    <p>A machine learning model that detects plant diseases from leaf images. Built with TensorFlow and Python.</p>
+
+                    <h3>🚜 Auto-Harvester script</h3>
+                    <p>An automation tool for optimizing workflows in CI/CD pipelines. Saved my team 10 hours a week!</p>
+
+                    <h3>🐔 Co-op Planner</h3>
+                    <p>A real-time collaborative task board using WebSockets and React.</p>
+                `
+            },
+            {
+                id: 'board',
+                x: 150, y: 200, w: 80, h: 60,
+                type: 'sign',
+                label: 'Blog Board',
+                interactDist: 50,
+                collisionBox: { x: 10, y: 10, w: 60, h: 50 },
+                door: { x: 40, y: 65 },
+                content: `
+                    <h2>Community Board (Blog)</h2>
+                    
+                    <h3>📅 Oct 20, 2023: Moving to VIM</h3>
+                    <p>Why I abandoned my mouse and how it changed my workflow forever.</p>
+
+                    <h3>📅 Sep 15, 2023: Canvas API 101</h3>
+                    <p>A tutorial on how to build exactly what you are looking at right now!</p>
+
+                    <h3>📅 Aug 01, 2023: burnout.js</h3>
+                    <p>Managing mental health in a fast-paced tech environment.</p>
+                `
+            },
+            {
+                id: 'mailbox',
+                x: 100, y: 60, w: 30, h: 50,
+                type: 'mailbox',
+                label: 'Resume/Contact',
+                interactDist: 40,
+                collisionBox: { x: 0, y: 0, w: 30, h: 50 },
+                door: { x: 15, y: 55 },
+                content: `
+                    <h2>Resume & Contact</h2>
+                    <p><strong>Email:</strong> alex@pixelvalley.dev</p>
+                    <p><strong>GitHub:</strong> github.com/alexdev</p>
+                    <hr>
+                    <h3>Experience</h3>
+                    <p><strong>Senior Dev @ Joja Corp</strong> (2020 - Present)<br>Leading frontend migration to React.</p>
+                    <p><strong>Freelance Developer</strong> (2018 - 2020)<br>Built e-commerce sites for local businesses.</p>
+                    <h3>Education</h3>
+                    <p>B.S. Computer Science, State University</p>
+                `
+            }
+        ];
+
+        // Decorative elements (Trees, rocks, etc.)
+        const SCENERY = [];
+        function initScenery() {
+            // Generate random trees/grass around
+            for(let i=0; i<50; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 300 + Math.random() * 500;
+                SCENERY.push({
+                    x: Math.cos(angle) * dist,
+                    y: Math.sin(angle) * dist,
+                    type: Math.random() > 0.8 ? 'rock' : 'tree'
+                });
+            }
+            // Specific placement to make it look nice
+            SCENERY.push({x: -120, y: -50, type: 'tree'});
+            SCENERY.push({x: -160, y: -30, type: 'tree'});
+            SCENERY.push({x: 200, y: -50, type: 'tree'});
+        }
+
+        /**
+         * INPUT HANDLING
+         */
+        window.addEventListener('keydown', (e) => {
+            if(gameState.keys.hasOwnProperty(e.key) || e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                gameState.keys[e.key] = true;
+            }
+            
+            // Interaction triggers
+            if((e.key === ' ' || e.key === 'Enter') && !gameState.isModalOpen && gameState.interactionTarget) {
+                openModal(gameState.interactionTarget.content);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if(gameState.keys.hasOwnProperty(e.key) || e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                gameState.keys[e.key] = false;
+            }
+        });
+
+        // Touch Controls
+        const btnUp = document.getElementById('btn-up');
+        const btnDown = document.getElementById('btn-down');
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
+        const btnAction = document.getElementById('btn-action');
+        const mobileControls = document.getElementById('mobile-controls');
+
+        // Detect touch device roughly
+        if('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            mobileControls.style.display = 'block';
+            promptEl.innerText = "Tap 'A' to Interact";
+        }
+
+        const addTouch = (elem, key) => {
+            elem.addEventListener('touchstart', (e) => { e.preventDefault(); gameState.keys[key] = true; });
+            elem.addEventListener('touchend', (e) => { e.preventDefault(); gameState.keys[key] = false; });
+        };
+
+        addTouch(btnUp, 'ArrowUp');
+        addTouch(btnDown, 'ArrowDown');
+        addTouch(btnLeft, 'ArrowLeft');
+        addTouch(btnRight, 'ArrowRight');
+        
+        btnAction.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            if(!gameState.isModalOpen && gameState.interactionTarget) {
+                openModal(gameState.interactionTarget.content);
+            }
+        });
+
+        /**
+         * GAME LOGIC
+         */
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            
+            // Start player near the house
+            gameState.player.x = 70;
+            gameState.player.y = 200;
+
+            initScenery();
+            requestAnimationFrame(loop);
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.imageSmoothingEnabled = false; // Keep pixel art crisp
+        }
+
+        function update() {
+            if (gameState.isModalOpen) return;
+
+            const p = gameState.player;
+            let dx = 0;
+            let dy = 0;
+
+            if (gameState.keys.w || gameState.keys.ArrowUp) dy = -PLAYER_SPEED;
+            if (gameState.keys.s || gameState.keys.ArrowDown) dy = PLAYER_SPEED;
+            if (gameState.keys.a || gameState.keys.ArrowLeft) dx = -PLAYER_SPEED;
+            if (gameState.keys.d || gameState.keys.ArrowRight) dx = PLAYER_SPEED;
+
+            // Normalize diagonal movement
+            if (dx !== 0 && dy !== 0) {
+                dx *= 0.707;
+                dy *= 0.707;
+            }
+
+            if (dx !== 0 || dy !== 0) {
+                p.isMoving = true;
+                
+                // Determine direction
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    p.dir = dx > 0 ? 'right' : 'left';
+                } else {
+                    p.dir = dy > 0 ? 'down' : 'up';
+                }
+
+                // Check collision with objects
+                const newX = p.x + dx;
+                const newY = p.y + dy;
+
+                if (!checkCollision(newX, p.y)) p.x = newX;
+                if (!checkCollision(p.x, newY)) p.y = newY;
+
+            } else {
+                p.isMoving = false;
+            }
+
+            // Check interaction
+            checkInteraction();
+
+            // Update Camera
+            gameState.camera.x = p.x - canvas.width / 2 + p.w / 2;
+            gameState.camera.y = p.y - canvas.height / 2 + p.h / 2;
+        }
+
+        function checkCollision(x, y) {
+            const pBox = { x: x, y: y + PLAYER_SIZE/2, w: PLAYER_SIZE, h: PLAYER_SIZE/2 }; // Collision at feet
+
+            for (let zone of ZONES) {
+                const box = zone.collisionBox;
+                const zoneX = zone.x + box.x;
+                const zoneY = zone.y + box.y;
+                
+                if (pBox.x < zoneX + box.w &&
+                    pBox.x + pBox.w > zoneX &&
+                    pBox.y < zoneY + box.h &&
+                    pBox.y + pBox.h > zoneY) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function checkInteraction() {
+            const p = gameState.player;
+            const pCenter = { x: p.x + p.w/2, y: p.y + p.h/2 };
+            
+            let closest = null;
+            let minDst = Infinity;
+
+            for (let zone of ZONES) {
+                const door = { x: zone.x + zone.door.x, y: zone.y + zone.door.y };
+                const dist = Math.hypot(pCenter.x - door.x, pCenter.y - door.y);
+
+                if (dist < zone.interactDist && dist < minDst) {
+                    minDst = dist;
+                    closest = zone;
+                }
+            }
+
+            gameState.interactionTarget = closest;
+            
+            if (closest) {
+                promptEl.style.display = 'block';
+            } else {
+                promptEl.style.display = 'none';
+            }
+        }
+
+        function openModal(content) {
+            gameState.isModalOpen = true;
+            modalBody.innerHTML = content;
+            modalOverlay.style.display = 'flex';
+            // Reset keys so player doesn't keep walking
+            Object.keys(gameState.keys).forEach(k => gameState.keys[k] = false);
+        }
+
+        function closeModal() {
+            gameState.isModalOpen = false;
+            modalOverlay.style.display = 'none';
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        /**
+         * RENDERING
+         */
+        function draw() {
+            // Clear Screen
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            // Apply Camera
+            ctx.translate(-gameState.camera.x, -gameState.camera.y);
+
+            // Draw Ground
+            drawGround();
+
+            // Sort entities by Y for depth sorting (pseudo-3D)
+            const entities = [
+                ...SCENERY.map(s => ({...s, type: 'scenery', z: s.y + 20})), // +20 to base
+                ...ZONES.map(z => ({...z, type: 'zone', z: z.y + z.collisionBox.h + z.collisionBox.y})),
+                { type: 'player', z: gameState.player.y + gameState.player.h }
+            ];
+
+            entities.sort((a, b) => a.z - b.z);
+
+            entities.forEach(e => {
+                if(e.type === 'scenery') drawScenery(e);
+                if(e.type === 'zone') drawZone(e);
+                if(e.type === 'player') drawPlayer();
+            });
+
+            // Draw Interaction Marker
+            if(gameState.interactionTarget) {
+                const t = gameState.interactionTarget;
+                const x = t.x + t.door.x;
+                const y = t.y + t.door.y - 30;
+                
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                
+                // Bobbing arrow
+                const offset = Math.sin(Date.now() / 200) * 5;
+                
+                ctx.beginPath();
+                ctx.moveTo(x - 10, y + offset);
+                ctx.lineTo(x + 10, y + offset);
+                ctx.lineTo(x, y + 10 + offset);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        function drawGround() {
+            // Draw a large green rectangle for the "world"
+            // Optimally we only draw what is in camera view, but for simplicity we draw a large area
+            const worldSize = 2000;
+            const startX = Math.floor(gameState.camera.x / TILE_SIZE) * TILE_SIZE - TILE_SIZE;
+            const startY = Math.floor(gameState.camera.y / TILE_SIZE) * TILE_SIZE - TILE_SIZE;
+            
+            // Draw background color
+            ctx.fillStyle = COLORS.water;
+            ctx.fillRect(gameState.camera.x, gameState.camera.y, canvas.width, canvas.height);
+
+            // Draw grass island
+            ctx.fillStyle = COLORS.grass;
+            ctx.fillRect(-1000, -1000, 2000, 2000);
+
+            // Noise / Texture for grass
+            ctx.fillStyle = COLORS.grassDark;
+            for(let x = -1000; x < 1000; x+=50) {
+                for(let y = -1000; y < 1000; y+=50) {
+                    if ((Math.abs(x * y) % 7) === 0) {
+                        ctx.fillRect(x + 10, y + 10, 5, 5);
+                        ctx.fillRect(x + 15, y + 5, 5, 5);
+                    }
+                }
+            }
+        }
+
+        function drawScenery(obj) {
+            if(obj.type === 'tree') {
+                // Trunk
+                ctx.fillStyle = COLORS.woodDark;
+                ctx.fillRect(obj.x - 8, obj.y - 10, 16, 30);
+                // Leaves
+                ctx.fillStyle = '#2ecc71';
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y - 30, 25, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = '#27ae60';
+                ctx.beginPath();
+                ctx.arc(obj.x - 10, obj.y - 35, 15, 0, Math.PI*2);
+                ctx.fill();
+            } else if (obj.type === 'rock') {
+                ctx.fillStyle = '#7f8c8d';
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y, 10, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillRect(obj.x-5, obj.y-8, 5, 5);
+            }
+        }
+
+        function drawZone(zone) {
+            if (zone.type === 'building') {
+                // Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.fillRect(zone.x + 10, zone.y + 100, 140, 40);
+
+                // Walls
+                ctx.fillStyle = '#f5d76e'; // Yellowish wall
+                ctx.fillRect(zone.x + 10, zone.y + 40, 140, 90);
+                
+                // Wood trim
+                ctx.fillStyle = COLORS.wood;
+                ctx.fillRect(zone.x + 10, zone.y + 40, 140, 10); // Top trim
+                ctx.fillRect(zone.x + 10, zone.y + 120, 140, 10); // Bottom trim
+                ctx.fillRect(zone.x + 10, zone.y + 40, 10, 90); // Left
+                ctx.fillRect(zone.x + 140, zone.y + 40, 10, 90); // Right
+
+                // Roof
+                ctx.fillStyle = COLORS.roof;
+                ctx.beginPath();
+                ctx.moveTo(zone.x - 10, zone.y + 40);
+                ctx.lineTo(zone.x + 80, zone.y - 20);
+                ctx.lineTo(zone.x + 170, zone.y + 40);
+                ctx.fill();
+
+                // Door
+                ctx.fillStyle = COLORS.woodDark;
+                ctx.fillRect(zone.x + 60, zone.y + 80, 40, 50);
+                ctx.fillStyle = '#f39c12'; // Knob
+                ctx.fillRect(zone.x + 90, zone.y + 105, 4, 4);
+
+                // Window
+                ctx.fillStyle = '#85c1e9';
+                ctx.fillRect(zone.x + 25, zone.y + 60, 30, 30);
+                ctx.fillStyle = COLORS.wood;
+                ctx.fillRect(zone.x + 38, zone.y + 60, 4, 30);
+                ctx.fillRect(zone.x + 25, zone.y + 73, 30, 4);
+
+            } else if (zone.type === 'garden') {
+                // Soil
+                ctx.fillStyle = COLORS.dirt;
+                ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+                
+                // Grid lines
+                ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                ctx.beginPath();
+                for(let gx=0; gx<=zone.w; gx+=30) {
+                    ctx.moveTo(zone.x + gx, zone.y);
+                    ctx.lineTo(zone.x + gx, zone.y + zone.h);
+                }
+                for(let gy=0; gy<=zone.h; gy+=30) {
+                    ctx.moveTo(zone.x, zone.y + gy);
+                    ctx.lineTo(zone.x + zone.w, zone.y + gy);
+                }
+                ctx.stroke();
+
+                // Crops
+                for(let gx=15; gx<zone.w; gx+=30) {
+                    for(let gy=15; gy<zone.h; gy+=30) {
+                        // Plant
+                        ctx.fillStyle = '#27ae60';
+                        ctx.beginPath();
+                        ctx.arc(zone.x + gx, zone.y + gy, 10, 0, Math.PI*2);
+                        ctx.fill();
+                        // Fruit/Flower (random color based on pos to look varied)
+                        const color = (gx+gy)%3 === 0 ? '#e74c3c' : (gx+gy)%3===1 ? '#f1c40f' : '#9b59b6';
+                        ctx.fillStyle = color;
+                        ctx.beginPath();
+                        ctx.arc(zone.x + gx, zone.y + gy - 5, 4, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                }
+                
+                // Sign
+                ctx.fillStyle = COLORS.wood;
+                ctx.fillRect(zone.x + zone.w/2 - 2, zone.y - 20, 4, 20);
+                ctx.fillStyle = COLORS.woodDark;
+                ctx.fillRect(zone.x + zone.w/2 - 15, zone.y - 35, 30, 20);
+
+            } else if (zone.type === 'sign') {
+                // Legs
+                ctx.fillStyle = COLORS.wood;
+                ctx.fillRect(zone.x + 15, zone.y + 30, 5, 20);
+                ctx.fillRect(zone.x + 40, zone.y + 30, 5, 20);
+                // Board
+                ctx.fillStyle = COLORS.woodDark;
+                ctx.fillRect(zone.x, zone.y, zone.w, 40);
+                // Paper
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(zone.x + 5, zone.y + 5, zone.w - 10, 30);
+                // Lines
+                ctx.fillStyle = '#333';
+                ctx.fillRect(zone.x + 10, zone.y + 15, zone.w - 20, 2);
+                ctx.fillRect(zone.x + 10, zone.y + 25, zone.w - 20, 2);
+
+            } else if (zone.type === 'mailbox') {
+                ctx.fillStyle = '#bdc3c7'; // Post
+                ctx.fillRect(zone.x + 12, zone.y + 20, 6, 30);
+                ctx.fillStyle = '#34495e'; // Box
+                ctx.beginPath();
+                ctx.arc(zone.x + 15, zone.y + 10, 15, Math.PI, 0);
+                ctx.lineTo(zone.x + 30, zone.y + 20);
+                ctx.lineTo(zone.x, zone.y + 20);
+                ctx.fill();
+                ctx.fillStyle = '#c0392b'; // Flag
+                ctx.fillRect(zone.x + 28, zone.y + 5, 2, 10);
+                ctx.fillRect(zone.x + 28, zone.y + 5, 8, 5);
+            }
+        }
+
+        function drawPlayer() {
+            const p = gameState.player;
+            const x = p.x;
+            const y = p.y;
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x + 16, y + 30, 10, 4, 0, 0, Math.PI*2);
+            ctx.fill();
+
+            // Simple Character Drawing
+            
+            // Legs (animated)
+            ctx.fillStyle = '#2c3e50'; // Pants
+            if (p.isMoving) {
+                const step = Math.sin(Date.now() / 100) * 5;
+                ctx.fillRect(x + 8, y + 20 + step, 6, 12); // Left leg
+                ctx.fillRect(x + 18, y + 20 - step, 6, 12); // Right leg
+            } else {
+                ctx.fillRect(x + 8, y + 20, 6, 12);
+                ctx.fillRect(x + 18, y + 20, 6, 12);
+            }
+
+            // Body (Shirt)
+            ctx.fillStyle = '#e74c3c'; // Red shirt
+            ctx.fillRect(x + 6, y + 12, 20, 14);
+
+            // Head
+            ctx.fillStyle = '#f1c40f'; // Skin
+            ctx.fillRect(x + 8, y, 16, 14);
+
+            // Hat
+            ctx.fillStyle = '#2980b9'; // Blue hat
+            ctx.fillRect(x + 6, y - 4, 20, 6); // Brim
+            ctx.fillRect(x + 8, y - 8, 16, 6); // Top
+
+            // Face details based on direction
+            ctx.fillStyle = 'black';
+            if (p.dir === 'down') {
+                ctx.fillRect(x + 12, y + 6, 2, 2); // Eye
+                ctx.fillRect(x + 18, y + 6, 2, 2); // Eye
+            } else if (p.dir === 'right') {
+                ctx.fillRect(x + 18, y + 6, 2, 2); // Eye
+            } else if (p.dir === 'left') {
+                ctx.fillRect(x + 12, y + 6, 2, 2); // Eye
+            }
+            
+            // Label "Me"
+            ctx.fillStyle = 'white';
+            ctx.font = '10px "Press Start 2P"';
+            ctx.fillText('Me', x + 6, y - 15);
+        }
+
+        function loop(timestamp) {
+            update();
+            draw();
+            gameState.lastTime = timestamp;
+            requestAnimationFrame(loop);
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
