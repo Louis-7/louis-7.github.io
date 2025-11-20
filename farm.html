@@ -571,18 +571,19 @@
             drawGround();
 
             // Sort entities by Y for depth sorting (pseudo-3D)
+            // FIX: Use 'drawType' instead of 'type' to avoid overwriting the zone's internal type property (building/garden/etc)
             const entities = [
-                ...SCENERY.map(s => ({...s, type: 'scenery', z: s.y + 20})), // +20 to base
-                ...ZONES.map(z => ({...z, type: 'zone', z: z.y + z.collisionBox.h + z.collisionBox.y})),
-                { type: 'player', z: gameState.player.y + gameState.player.h }
+                ...SCENERY.map(s => ({...s, drawType: 'scenery', z: s.y + 20})), 
+                ...ZONES.map(z => ({...z, drawType: 'zone', z: z.y + z.collisionBox.h + z.collisionBox.y})),
+                { drawType: 'player', z: gameState.player.y + gameState.player.h }
             ];
 
             entities.sort((a, b) => a.z - b.z);
 
             entities.forEach(e => {
-                if(e.type === 'scenery') drawScenery(e);
-                if(e.type === 'zone') drawZone(e);
-                if(e.type === 'player') drawPlayer();
+                if(e.drawType === 'scenery') drawScenery(e);
+                if(e.drawType === 'zone') drawZone(e);
+                if(e.drawType === 'player') drawPlayer();
             });
 
             // Draw Interaction Marker
