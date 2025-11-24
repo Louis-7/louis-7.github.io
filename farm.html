@@ -27,6 +27,7 @@
         #gameCanvas {
             display: block;
             image-rendering: pixelated; /* Crucial for the retro look */
+            cursor: crosshair;
         }
 
         /* UI Overlay for Interactions */
@@ -40,6 +41,76 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        /* Editor UI */
+        #editor-ui {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        /* Season UI */
+        #season-ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            border: 2px solid #fff;
+            font-size: 14px;
+            text-transform: uppercase;
+            pointer-events: auto; /* Allow clicking */
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #season-ui:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #season-hint {
+            font-size: 8px;
+            color: #ddd;
+            margin-top: 5px;
+            text-transform: none;
+            text-align: center;
+        }
+
+        .editor-btn {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 8px 12px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .editor-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0;
+        }
+
+        .editor-btn.active {
+            background: #f1c40f;
+        }
+
+        #editor-toolbar {
+            display: none; /* Hidden by default */
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #000;
+            padding: 10px;
+            flex-direction: column;
+            gap: 5px;
         }
 
         /* Interaction Prompt (e.g. "Press Space") */
@@ -210,6 +281,24 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui-layer">
+        
+        <div id="season-ui">
+            <span id="season-text">SPRING</span>
+            <div id="season-hint">(Click to change)</div>
+        </div>
+
+        <div id="editor-ui">
+            <button class="editor-btn" id="toggle-editor">Edit Map</button>
+            <div id="editor-toolbar">
+                <button class="editor-btn active" onclick="setTool('tree')">🌲 Tree</button>
+                <button class="editor-btn" onclick="setTool('rock')">🪨 Rock</button>
+                <button class="editor-btn" onclick="setTool('flower')">🌸 Flower</button>
+                <button class="editor-btn" onclick="setTool('erase')">❌ Eraser</button>
+                <hr style="width: 100%; border: 1px solid #ddd;">
+                <button class="editor-btn" onclick="exportMap()">💾 Export JSON</button>
+            </div>
+        </div>
+
         <div id="interaction-prompt">Press SPACE to Interact</div>
         
         <div id="mobile-controls">
@@ -240,21 +329,84 @@
         const modalOverlay = document.getElementById('modal-overlay');
         const modalBody = document.getElementById('modal-body');
         const closeBtn = document.getElementById('close-btn');
+        const seasonUi = document.getElementById('season-ui');
+        const seasonText = document.getElementById('season-text');
 
         // Game constants
         const TILE_SIZE = 48; // Base unit size
         const PLAYER_SPEED = 4;
         const PLAYER_SIZE = 32;
-        const COLORS = {
-            grass: '#76c758',
-            grassDark: '#66b04a',
-            dirt: '#8b5e3c',
-            wood: '#a05a2c',
-            woodDark: '#6d3d1e',
-            roof: '#c0392b',
-            water: '#3498db',
-            waterDeep: '#2980b9'
+        const SEASON_DURATION = 60000; // 60 seconds per season
+        const SEASONS = ['Spring', 'Summer', 'Fall', 'Winter'];
+        
+        // World Limits (Playable Area - The Island)
+        const WORLD_LIMITS = { minX: -800, maxX: 800, minY: -600, maxY: 600 };
+
+        const SEASON_PALETTES = {
+            'Spring': {
+                grass: '#76c758',
+                grassDark: '#66b04a',
+                dirt: '#8b5e3c',
+                wood: '#a05a2c',
+                woodDark: '#6d3d1e',
+                roof: '#c0392b',
+                water: '#3498db',
+                treeLight: '#2ecc71',
+                treeDark: '#27ae60',
+                flowerStem: '#27ae60',
+                flowerPetal: '#e74c3c',
+                cropLeaf: '#2ecc71',
+                cropFruit: ['#e74c3c', '#f1c40f', '#9b59b6']
+            },
+            'Summer': {
+                grass: '#53c738', // Brighter green
+                grassDark: '#41a02a',
+                dirt: '#8b5e3c',
+                wood: '#a05a2c',
+                woodDark: '#6d3d1e',
+                roof: '#c0392b',
+                water: '#3498db',
+                treeLight: '#2ecc71',
+                treeDark: '#27ae60',
+                flowerStem: '#27ae60',
+                flowerPetal: '#f39c12',
+                cropLeaf: '#27ae60',
+                cropFruit: ['#c0392b', '#e67e22', '#f39c12']
+            },
+            'Fall': {
+                grass: '#d68910', // Orange/Brown
+                grassDark: '#b9770e',
+                dirt: '#6e4c30',
+                wood: '#a05a2c',
+                woodDark: '#6d3d1e',
+                roof: '#922b21',
+                water: '#2e86c1',
+                treeLight: '#e67e22', // Orange leaves
+                treeDark: '#d35400',
+                flowerStem: '#8b5e3c', // Drying
+                flowerPetal: '#8e44ad',
+                cropLeaf: '#d35400',
+                cropFruit: ['#e67e22', '#8e44ad', '#c0392b']
+            },
+            'Winter': {
+                grass: '#ecf0f1', // Snow
+                grassDark: '#bdc3c7',
+                dirt: '#95a5a6',
+                wood: '#7f8c8d', // Frozen wood
+                woodDark: '#555',
+                roof: '#2c3e50',
+                water: '#aed6f1', // Icy water
+                treeLight: '#dfe6e9', // Snow covered
+                treeDark: '#b2babb',
+                flowerStem: '#95a5a6',
+                flowerPetal: '#3498db',
+                cropLeaf: '#bdc3c7',
+                cropFruit: ['#ecf0f1', '#95a5a6', '#7f8c8d'] // Frozen
+            }
         };
+
+        // Current Colors (will be updated dynamically)
+        let COLORS = {...SEASON_PALETTES['Spring']};
 
         // Game State
         let gameState = {
@@ -263,7 +415,17 @@
             camera: { x: 0, y: 0 },
             interactionTarget: null,
             isModalOpen: false,
-            lastTime: 0
+            lastTime: 0,
+            season: {
+                current: 0, // Index in SEASONS
+                timer: 0
+            },
+            editor: {
+                active: false,
+                tool: 'tree',
+                mouseX: 0,
+                mouseY: 0
+            }
         };
 
         // Content Data
@@ -355,24 +517,122 @@
             }
         ];
 
-        // Decorative elements (Trees, rocks, etc.)
-        const SCENERY = [];
+        // SCENERY ARRAY
+        let SCENERY = [];
+        
         function initScenery() {
             // Generate random trees/grass around
             for(let i=0; i<50; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const dist = 300 + Math.random() * 500;
-                SCENERY.push({
-                    x: Math.cos(angle) * dist,
-                    y: Math.sin(angle) * dist,
-                    type: Math.random() > 0.8 ? 'rock' : 'tree'
-                });
+                // Only place if inside bounds roughly (optional, but keeps random clutter down)
+                const x = Math.round(Math.cos(angle) * dist);
+                const y = Math.round(Math.sin(angle) * dist);
+                
+                if (x > WORLD_LIMITS.minX && x < WORLD_LIMITS.maxX && y > WORLD_LIMITS.minY && y < WORLD_LIMITS.maxY) {
+                    SCENERY.push({
+                        x: x,
+                        y: y,
+                        type: Math.random() > 0.8 ? 'rock' : 'tree'
+                    });
+                }
             }
             // Specific placement to make it look nice
             SCENERY.push({x: -120, y: -50, type: 'tree'});
             SCENERY.push({x: -160, y: -30, type: 'tree'});
             SCENERY.push({x: 200, y: -50, type: 'tree'});
         }
+
+        /**
+         * SEASON LOGIC
+         */
+        function nextSeason() {
+            gameState.season.current = (gameState.season.current + 1) % SEASONS.length;
+            gameState.season.timer = 0; // Reset timer for full duration
+            applySeason();
+        }
+
+        function applySeason() {
+            const newSeason = SEASONS[gameState.season.current];
+            COLORS = {...SEASON_PALETTES[newSeason]};
+            seasonText.innerText = newSeason;
+            console.log("Season changed to " + newSeason);
+        }
+
+        seasonUi.addEventListener('click', nextSeason);
+
+
+        /**
+         * EDITOR LOGIC
+         */
+        const editorToolbar = document.getElementById('editor-toolbar');
+        const toggleEditorBtn = document.getElementById('toggle-editor');
+
+        toggleEditorBtn.addEventListener('click', () => {
+            gameState.editor.active = !gameState.editor.active;
+            editorToolbar.style.display = gameState.editor.active ? 'flex' : 'none';
+            toggleEditorBtn.innerText = gameState.editor.active ? 'Done Editing' : 'Edit Map';
+            toggleEditorBtn.style.background = gameState.editor.active ? '#e74c3c' : '#fff';
+            toggleEditorBtn.style.color = gameState.editor.active ? '#fff' : '#000';
+        });
+
+        window.setTool = function(tool) {
+            gameState.editor.tool = tool;
+            // Update UI
+            document.querySelectorAll('#editor-toolbar .editor-btn').forEach(btn => {
+                if(btn.innerText.toLowerCase().includes(tool)) {
+                    btn.classList.add('active');
+                    btn.style.background = '#f1c40f';
+                } else if(!btn.innerText.includes('Export')) {
+                    btn.classList.remove('active');
+                    btn.style.background = '#fff';
+                }
+            });
+        };
+
+        window.exportMap = function() {
+            const data = JSON.stringify(SCENERY);
+            // Copy to clipboard
+            navigator.clipboard.writeText(data).then(() => {
+                alert('Map data copied to clipboard! Paste it into the SCENERY array in the code to save permanently.');
+            });
+            console.log(data);
+        };
+
+        // Mouse listeners for editor
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            gameState.editor.mouseX = e.clientX - rect.left;
+            gameState.editor.mouseY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (!gameState.editor.active) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            const worldX = Math.round(clickX + gameState.camera.x);
+            const worldY = Math.round(clickY + gameState.camera.y);
+
+            if (gameState.editor.tool === 'erase') {
+                // Find closest object
+                const clickThreshold = 30;
+                const idx = SCENERY.findIndex(s => Math.hypot(s.x - worldX, s.y - worldY) < clickThreshold);
+                if (idx !== -1) {
+                    SCENERY.splice(idx, 1);
+                }
+            } else {
+                // Add object
+                SCENERY.push({
+                    x: worldX,
+                    y: worldY,
+                    type: gameState.editor.tool
+                });
+            }
+        });
+
 
         /**
          * INPUT HANDLING
@@ -446,8 +706,15 @@
             ctx.imageSmoothingEnabled = false; // Keep pixel art crisp
         }
 
-        function update() {
+        function update(deltaTime) {
             if (gameState.isModalOpen) return;
+
+            // -- SEASON LOGIC --
+            gameState.season.timer += deltaTime;
+            if (gameState.season.timer >= SEASON_DURATION) {
+                nextSeason();
+            }
+            // ------------------
 
             const p = gameState.player;
             let dx = 0;
@@ -475,8 +742,15 @@
                 }
 
                 // Check collision with objects
-                const newX = p.x + dx;
-                const newY = p.y + dy;
+                let newX = p.x + dx;
+                let newY = p.y + dy;
+
+                // World Boundary Constraints (The Island)
+                // Stop if player tries to walk off the island rect
+                if (newX < WORLD_LIMITS.minX) newX = p.x;
+                if (newX > WORLD_LIMITS.maxX - p.w) newX = p.x;
+                if (newY < WORLD_LIMITS.minY) newY = p.y;
+                if (newY > WORLD_LIMITS.maxY - p.h) newY = p.y;
 
                 if (!checkCollision(newX, p.y)) p.x = newX;
                 if (!checkCollision(p.x, newY)) p.y = newY;
@@ -571,7 +845,6 @@
             drawGround();
 
             // Sort entities by Y for depth sorting (pseudo-3D)
-            // FIX: Use 'drawType' instead of 'type' to avoid overwriting the zone's internal type property (building/garden/etc)
             const entities = [
                 ...SCENERY.map(s => ({...s, drawType: 'scenery', z: s.y + 20})), 
                 ...ZONES.map(z => ({...z, drawType: 'zone', z: z.y + z.collisionBox.h + z.collisionBox.y})),
@@ -608,28 +881,78 @@
                 ctx.stroke();
             }
 
+            // Draw Editor Ghost
+            if(gameState.editor.active && gameState.editor.tool !== 'erase') {
+                const worldX = gameState.editor.mouseX + gameState.camera.x;
+                const worldY = gameState.editor.mouseY + gameState.camera.y;
+                
+                ctx.globalAlpha = 0.5; // Ghost effect
+                drawScenery({x: worldX, y: worldY, type: gameState.editor.tool});
+                ctx.globalAlpha = 1.0;
+                
+                // Cursor circle
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(worldX, worldY, 20, 0, Math.PI*2);
+                ctx.stroke();
+            } else if (gameState.editor.active && gameState.editor.tool === 'erase') {
+                const worldX = gameState.editor.mouseX + gameState.camera.x;
+                const worldY = gameState.editor.mouseY + gameState.camera.y;
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(worldX, worldY, 15, 0, Math.PI*2);
+                ctx.moveTo(worldX - 10, worldY - 10);
+                ctx.lineTo(worldX + 10, worldY + 10);
+                ctx.moveTo(worldX + 10, worldY - 10);
+                ctx.lineTo(worldX - 10, worldY + 10);
+                ctx.stroke();
+            }
+
             ctx.restore();
         }
 
         function drawGround() {
-            // Draw a large green rectangle for the "world"
-            // Optimally we only draw what is in camera view, but for simplicity we draw a large area
-            const worldSize = 2000;
-            const startX = Math.floor(gameState.camera.x / TILE_SIZE) * TILE_SIZE - TILE_SIZE;
-            const startY = Math.floor(gameState.camera.y / TILE_SIZE) * TILE_SIZE - TILE_SIZE;
-            
-            // Draw background color
+            // 1. Draw Water (Screen wide, based on camera view)
             ctx.fillStyle = COLORS.water;
             ctx.fillRect(gameState.camera.x, gameState.camera.y, canvas.width, canvas.height);
 
-            // Draw grass island
-            ctx.fillStyle = COLORS.grass;
-            ctx.fillRect(-1000, -1000, 2000, 2000);
+            // 2. Water Animation (Simple sparkles/waves)
+            const time = Date.now();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            
+            // Draw random-ish waves based on world coordinates visible in camera
+            const startX = Math.floor(gameState.camera.x / 50) * 50;
+            const startY = Math.floor(gameState.camera.y / 50) * 50;
+            const w = canvas.width + 100;
+            const h = canvas.height + 100;
+            
+            for(let x = startX; x < startX + w; x += 50) {
+                for(let y = startY; y < startY + h; y += 50) {
+                    // Create deterministic "randomness" for position offset
+                    const offsetX = Math.sin(x * 99 + time / 1000) * 20;
+                    const offsetY = Math.cos(y * 88 + time / 1000) * 20;
+                    
+                    // Only draw if outside the island rect
+                    if (x + offsetX < WORLD_LIMITS.minX || x + offsetX > WORLD_LIMITS.maxX || 
+                        y + offsetY < WORLD_LIMITS.minY || y + offsetY > WORLD_LIMITS.maxY) {
+                         
+                        // Draw wave foam
+                        const size = (Math.sin(time / 500 + x) + 1) * 2 + 1;
+                        ctx.fillRect(x + offsetX, y + offsetY, size * 2, size);
+                    }
+                }
+            }
 
-            // Noise / Texture for grass
+            // 3. Draw The Island (Grass)
+            ctx.fillStyle = COLORS.grass;
+            ctx.fillRect(WORLD_LIMITS.minX, WORLD_LIMITS.minY, WORLD_LIMITS.maxX - WORLD_LIMITS.minX, WORLD_LIMITS.maxY - WORLD_LIMITS.minY);
+
+            // 4. Grass Texture (Inside Island)
             ctx.fillStyle = COLORS.grassDark;
-            for(let x = -1000; x < 1000; x+=50) {
-                for(let y = -1000; y < 1000; y+=50) {
+            for(let x = WORLD_LIMITS.minX; x < WORLD_LIMITS.maxX; x+=50) {
+                for(let y = WORLD_LIMITS.minY; y < WORLD_LIMITS.maxY; y+=50) {
                     if ((Math.abs(x * y) % 7) === 0) {
                         ctx.fillRect(x + 10, y + 10, 5, 5);
                         ctx.fillRect(x + 15, y + 5, 5, 5);
@@ -644,11 +967,11 @@
                 ctx.fillStyle = COLORS.woodDark;
                 ctx.fillRect(obj.x - 8, obj.y - 10, 16, 30);
                 // Leaves
-                ctx.fillStyle = '#2ecc71';
+                ctx.fillStyle = COLORS.treeLight; // Dynamic color
                 ctx.beginPath();
                 ctx.arc(obj.x, obj.y - 30, 25, 0, Math.PI*2);
                 ctx.fill();
-                ctx.fillStyle = '#27ae60';
+                ctx.fillStyle = COLORS.treeDark; // Dynamic color
                 ctx.beginPath();
                 ctx.arc(obj.x - 10, obj.y - 35, 15, 0, Math.PI*2);
                 ctx.fill();
@@ -659,6 +982,17 @@
                 ctx.fill();
                 ctx.fillStyle = '#95a5a6';
                 ctx.fillRect(obj.x-5, obj.y-8, 5, 5);
+            } else if (obj.type === 'flower') {
+                ctx.fillStyle = COLORS.flowerStem; // Dynamic
+                ctx.fillRect(obj.x - 1, obj.y, 2, 8);
+                ctx.fillStyle = COLORS.flowerPetal; // Dynamic
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y, 4, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = '#f1c40f'; // Center
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y, 1.5, 0, Math.PI*2);
+                ctx.fill();
             }
         }
 
@@ -722,12 +1056,15 @@
                 for(let gx=15; gx<zone.w; gx+=30) {
                     for(let gy=15; gy<zone.h; gy+=30) {
                         // Plant
-                        ctx.fillStyle = '#27ae60';
+                        ctx.fillStyle = COLORS.cropLeaf; // DYNAMIC COLOR
                         ctx.beginPath();
                         ctx.arc(zone.x + gx, zone.y + gy, 10, 0, Math.PI*2);
                         ctx.fill();
-                        // Fruit/Flower (random color based on pos to look varied)
-                        const color = (gx+gy)%3 === 0 ? '#e74c3c' : (gx+gy)%3===1 ? '#f1c40f' : '#9b59b6';
+                        
+                        // Fruit/Flower (random color from palette)
+                        const palette = COLORS.cropFruit;
+                        const color = palette[(gx+gy)%palette.length];
+                        
                         ctx.fillStyle = color;
                         ctx.beginPath();
                         ctx.arc(zone.x + gx, zone.y + gy - 5, 4, 0, Math.PI*2);
@@ -827,9 +1164,10 @@
         }
 
         function loop(timestamp) {
-            update();
-            draw();
+            const deltaTime = timestamp - gameState.lastTime;
             gameState.lastTime = timestamp;
+            update(deltaTime);
+            draw();
             requestAnimationFrame(loop);
         }
 
