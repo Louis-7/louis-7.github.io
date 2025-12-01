@@ -990,12 +990,22 @@
             
             initScenery();
             
-            // Wait for resources (Font, Blogs, Min Time)
-            const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
-            const fontLoad = document.fonts.ready;
-            const blogLoad = fetchBlogs();
+            // Wait for resources (Font, Blogs) with a timeout
+            // We want to show the loading screen for at least 2s (minLoadTime)
+            // But we don't want to wait forever, so we cap resource waiting at 5s (maxLoadTime)
+            const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000)); 
+            const maxLoadTime = new Promise(resolve => setTimeout(resolve, 5000));
+            
+            const fontLoad = document.fonts.ready.catch(e => console.warn('Font load warning:', e));
+            const blogLoad = fetchBlogs().catch(e => console.warn('Blog load warning:', e));
+            
+            const resourcesLoaded = Promise.all([fontLoad, blogLoad]);
 
-            await Promise.all([minLoadTime, fontLoad, blogLoad]);
+            // Wait for (resources loaded OR timeout) AND min time
+            await Promise.all([
+                minLoadTime, 
+                Promise.race([resourcesLoaded, maxLoadTime])
+            ]);
 
             // Start player in front of the new house location
             gameState.player.x = 0;
