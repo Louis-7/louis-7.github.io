@@ -636,15 +636,44 @@
             //     BOUNDARY_OBJECTS.push({x: pastureRect.x + pastureRect.w, y: y, type: 'fence'});
             // }
 
-            // 2. Place Initial Animals in Pasture
-            createAnimal('cow', 250, 0);
-            createAnimal('cow', 400, 100);
-            createAnimal('chicken', 200, -100);
-            createAnimal('chicken', 220, -80);
-            createAnimal('chicken', 180, -120);
-            createAnimal('horse', 350, -50);
-            createAnimal('sheep', 300, 150);
-            createAnimal('sheep', 450, 200);
+            // 2. Place Initial Animals (Randomly but avoiding zones)
+            const animalsToSpawn = ['cow', 'cow', 'chicken', 'chicken', 'chicken', 'horse', 'sheep', 'sheep'];
+            
+            animalsToSpawn.forEach(type => {
+                let placed = false;
+                let attempts = 0;
+                while(!placed && attempts < 50) {
+                    // Try to place somewhat near the center/right (pasture area) first, then global
+                    let x, y;
+                    if (attempts < 20) {
+                        // Pasture-ish area
+                        x = 150 + Math.random() * 400;
+                        y = -200 + Math.random() * 400;
+                    } else {
+                        // Anywhere
+                        x = Math.random() * (WORLD_LIMITS.maxX - WORLD_LIMITS.minX) + WORLD_LIMITS.minX;
+                        y = Math.random() * (WORLD_LIMITS.maxY - WORLD_LIMITS.minY) + WORLD_LIMITS.minY;
+                    }
+
+                    // Check collision with zones
+                    let hitZone = false;
+                    const buffer = 40; // Space around zones
+                    
+                    for(const zone of ZONES) {
+                        if (x > zone.x - buffer && x < zone.x + zone.w + buffer &&
+                            y > zone.y - buffer && y < zone.y + zone.h + buffer) {
+                            hitZone = true;
+                            break;
+                        }
+                    }
+
+                    if (!hitZone) {
+                        createAnimal(type, x, y);
+                        placed = true;
+                    }
+                    attempts++;
+                }
+            });
 
             // 3. Place Scenery (Trees, rocks)
             // Fill outer areas
