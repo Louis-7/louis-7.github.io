@@ -43,74 +43,99 @@
             justify-content: space-between;
         }
 
-        /* Editor UI */
-        #editor-ui {
+        /* --- SETTINGS MENU STYLES --- */
+        #settings-panel {
             position: absolute;
             top: 10px;
             right: 10px;
+            width: 220px; /* Slightly wider for new tools */
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.4);
             pointer-events: auto;
+            font-family: 'Press Start 2P', cursive;
+            display: flex; /* Controlled by JS flag */
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 8px;
+            font-size: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .panel-body {
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
+            gap: 12px;
         }
 
-        /* Season UI */
-        #season-ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            border: 2px solid #fff;
-            font-size: 14px;
-            text-transform: uppercase;
-            pointer-events: auto; /* Allow clicking */
-            cursor: pointer;
-            user-select: none;
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        #season-ui:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        #season-hint {
+        .control-label {
             font-size: 8px;
-            color: #ddd;
-            margin-top: 5px;
-            text-transform: none;
-            text-align: center;
+            color: #555;
+            text-transform: uppercase;
         }
 
-        .editor-btn {
+        /* Pixel Art Buttons */
+        .pixel-btn {
             background: #fff;
-            border: 2px solid #000;
-            padding: 8px 12px;
+            border: 2px solid #4a3b2a;
+            padding: 8px;
             font-family: 'Press Start 2P', cursive;
             font-size: 10px;
+            color: #4a3b2a;
             cursor: pointer;
-            box-shadow: 2px 2px 0px #000;
+            text-align: center;
+            box-shadow: 2px 2px 0px #8b4513;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        .editor-btn:active {
+        .pixel-btn:active {
             transform: translate(2px, 2px);
             box-shadow: 0 0 0;
         }
 
-        .editor-btn.active {
-            background: #f1c40f;
+        .pixel-btn.active {
+            background-color: #f1c40f;
+            border-color: #b78e0c;
         }
 
-        #editor-toolbar {
+        /* Editor Tools Grid */
+        #editor-tools {
             display: none; /* Hidden by default */
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #000;
-            padding: 10px;
-            flex-direction: column;
+            grid-template-columns: repeat(5, 1fr); /* Increased columns */
             gap: 5px;
+            margin-top: 5px;
+        }
+
+        .tool-btn {
+            padding: 5px;
+            font-size: 14px;
+            text-align: center;
+            background: #eee;
+            border: 2px solid #ccc;
+            cursor: pointer;
+        }
+        .tool-btn.active {
+            background: #f1c40f;
+            border-color: #000;
+        }
+
+        /* Minimize logic */
+        #settings-panel.minimized .panel-body {
+            display: none;
         }
 
         /* Interaction Prompt (e.g. "Press Space") */
@@ -282,20 +307,41 @@
 
     <div id="ui-layer">
         
-        <div id="season-ui">
-            <span id="season-text">SPRING</span>
-            <div id="season-hint">(Click to change)</div>
-        </div>
+        <!-- NEW SETTINGS MENU (Replaces old Season/Editor UI) -->
+        <div id="settings-panel">
+            <div class="panel-header" id="panel-header">
+                <span>⚙️ MENU</span>
+                <span id="toggle-icon">▼</span>
+            </div>
+            <div class="panel-body">
+                <!-- Season Control -->
+                <div class="control-group">
+                    <span class="control-label">Current Season</span>
+                    <button class="pixel-btn" id="season-btn">SPRING</button>
+                </div>
+                
+                <!-- Editor Control -->
+                <div class="control-group">
+                    <span class="control-label">Map Editor</span>
+                    <button class="pixel-btn" id="editor-toggle-btn">Enable Editing</button>
+                    
+                    <div id="editor-tools">
+                        <button class="tool-btn active" onclick="setTool('tree')">🌲</button>
+                        <button class="tool-btn" onclick="setTool('rock')">🪨</button>
+                        <button class="tool-btn" onclick="setTool('flower')">🌸</button>
+                        <button class="tool-btn" onclick="setTool('plant')">🌿</button> <!-- New Plant -->
+                        <button class="tool-btn" onclick="setTool('cow')">🐄</button>   <!-- New Cow -->
+                        <button class="tool-btn" onclick="setTool('chicken')">🐔</button><!-- New Chicken -->
+                        <button class="tool-btn" onclick="setTool('horse')">🐎</button> <!-- New Horse -->
+                        <button class="tool-btn" onclick="setTool('sheep')">🐏</button> <!-- New Sheep -->
+                        <button class="tool-btn" onclick="setTool('erase')">❌</button>
+                    </div>
+                </div>
 
-        <div id="editor-ui">
-            <button class="editor-btn" id="toggle-editor">Edit Map</button>
-            <div id="editor-toolbar">
-                <button class="editor-btn active" onclick="setTool('tree')">🌲 Tree</button>
-                <button class="editor-btn" onclick="setTool('rock')">🪨 Rock</button>
-                <button class="editor-btn" onclick="setTool('flower')">🌸 Flower</button>
-                <button class="editor-btn" onclick="setTool('erase')">❌ Eraser</button>
-                <hr style="width: 100%; border: 1px solid #ddd;">
-                <button class="editor-btn" onclick="exportMap()">💾 Export JSON</button>
+                <!-- Export -->
+                <div class="control-group">
+                    <button class="pixel-btn" onclick="exportMap()" style="font-size: 8px;">💾 Copy Map JSON</button>
+                </div>
             </div>
         </div>
 
@@ -321,6 +367,11 @@
 
     <script>
         /**
+         * GLOBAL FLAGS
+         */
+        const SHOW_SETTINGS_UI = true; // Set to false to hide the menu completely
+
+        /**
          * CONFIGURATION & STATE
          */
         const canvas = document.getElementById('gameCanvas');
@@ -329,8 +380,14 @@
         const modalOverlay = document.getElementById('modal-overlay');
         const modalBody = document.getElementById('modal-body');
         const closeBtn = document.getElementById('close-btn');
-        const seasonUi = document.getElementById('season-ui');
-        const seasonText = document.getElementById('season-text');
+
+        // Settings Elements
+        const settingsPanel = document.getElementById('settings-panel');
+        const seasonBtn = document.getElementById('season-btn');
+        const editorToggleBtn = document.getElementById('editor-toggle-btn');
+        const editorTools = document.getElementById('editor-tools');
+        const panelHeader = document.getElementById('panel-header');
+        const toggleIcon = document.getElementById('toggle-icon');
 
         // Game constants
         const TILE_SIZE = 48; // Base unit size
@@ -341,6 +398,17 @@
         
         // World Limits (Playable Area - The Island)
         const WORLD_LIMITS = { minX: -800, maxX: 800, minY: -600, maxY: 600 };
+
+        // Animal Constants
+        const ANIMAL_SPEED = 1;
+        const ANIMAL_MOVE_CHANCE = 0.02; // Chance to start moving per frame
+
+        const ANIMAL_COLORS = {
+            cow: { body: '#e3dac9', spots: '#5d4037', snout: '#f8bbd0' }, // Holstein-ish
+            chicken: { body: '#ffffff', comb: '#c0392b', beak: '#f1c40f' }, // White chicken
+            horse: { body: '#a1887f', mane: '#5d4037', snout: '#d7ccc8' }, // Brown horse
+            sheep: { body: '#ecf0f1', head: '#34495e', legs: '#34495e' } // Fluffy sheep
+        };
 
         const SEASON_PALETTES = {
             'Spring': {
@@ -420,6 +488,7 @@
                 current: 0, // Index in SEASONS
                 timer: 0
             },
+            animals: [], // Array to store animal instances
             editor: {
                 active: false,
                 tool: 'tree',
@@ -428,16 +497,16 @@
             }
         };
 
-        // Content Data
+        // Content Data (Zones) - Re-organized Layout
         const ZONES = [
             {
                 id: 'house',
-                x: 0, y: 0, w: 160, h: 140,
+                x: -80, y: -300, w: 160, h: 140, // Moved up
                 type: 'building',
                 label: 'My House',
                 interactDist: 60,
-                collisionBox: { x: 10, y: 40, w: 140, h: 90 }, // Physical blocked area
-                door: { x: 70, y: 130 }, // Interaction point
+                collisionBox: { x: 10, y: 40, w: 140, h: 90 },
+                door: { x: 70, y: 130 },
                 content: `
                     <h2>About Me</h2>
                     <p>Hi! I'm <strong>Alex</strong>, a passionate Full Stack Developer who loves building interactive web experiences.</p>
@@ -453,15 +522,15 @@
                 `
             },
             {
-                id: 'garden',
-                x: -250, y: 50, w: 180, h: 150,
+                id: 'field1', // Renamed from garden
+                x: -350, y: -150, w: 210, h: 210, // Resized to match 30px grid (210/30 = 7)
                 type: 'garden',
-                label: 'Projects Patch',
+                label: 'Projects Field',
                 interactDist: 80,
-                collisionBox: { x: 0, y: 0, w: 180, h: 150 },
-                door: { x: 90, y: 160 },
+                collisionBox: { x: 0, y: 0, w: 210, h: 210 },
+                door: { x: 105, y: 220 },
                 content: `
-                    <h2>Projects Garden</h2>
+                    <h2>Projects Field</h2>
                     <p>Here is what I've been growing lately:</p>
                     
                     <h3>🌾 Crop Analyzer AI</h3>
@@ -475,8 +544,27 @@
                 `
             },
             {
+                id: 'field2', // New second field
+                x: -350, y: 100, w: 210, h: 210, // Resized to match 30px grid (210/30 = 7)
+                type: 'garden',
+                label: 'Skills Field',
+                interactDist: 80,
+                collisionBox: { x: 0, y: 0, w: 210, h: 210 },
+                door: { x: 105, y: 220 },
+                content: `
+                    <h2>Skills Field</h2>
+                    <p>Cultivating knowledge is key!</p>
+                    <ul>
+                        <li><strong>Languages:</strong> JavaScript, Python, HTML/CSS, SQL</li>
+                        <li><strong>Frameworks:</strong> React, Node.js, Django, Flask</li>
+                        <li><strong>Tools:</strong> Git, Docker, Webpack</li>
+                        <li><strong>Design:</strong> Figma, Aseprite (for pixel art!)</li>
+                    </ul>
+                `
+            },
+            {
                 id: 'board',
-                x: 150, y: 200, w: 80, h: 60,
+                x: 120, y: -100, w: 80, h: 60, // Moved near house
                 type: 'sign',
                 label: 'Blog Board',
                 interactDist: 50,
@@ -497,7 +585,7 @@
             },
             {
                 id: 'mailbox',
-                x: 100, y: 60, w: 30, h: 50,
+                x: 60, y: -140, w: 30, h: 50, // Moved right next to house door
                 type: 'mailbox',
                 label: 'Resume/Contact',
                 interactDist: 40,
@@ -517,30 +605,74 @@
             }
         ];
 
-        // SCENERY ARRAY
+        // Data Arrays
         let SCENERY = [];
+        let ANIMALS = [];
+        let BOUNDARY_OBJECTS = [];
         
+        // Helper to create an animal
+        function createAnimal(type, x, y) {
+            ANIMALS.push({
+                x: x, y: y,
+                type: type,
+                dir: 'down',
+                frame: 0,
+                isMoving: false,
+                moveTimer: 0
+            });
+        }
+
+        // Initialize the new map layout
         function initScenery() {
-            // Generate random trees/grass around
-            for(let i=0; i<50; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 300 + Math.random() * 500;
-                // Only place if inside bounds roughly (optional, but keeps random clutter down)
-                const x = Math.round(Math.cos(angle) * dist);
-                const y = Math.round(Math.sin(angle) * dist);
-                
-                if (x > WORLD_LIMITS.minX && x < WORLD_LIMITS.maxX && y > WORLD_LIMITS.minY && y < WORLD_LIMITS.maxY) {
-                    SCENERY.push({
-                        x: x,
-                        y: y,
-                        type: Math.random() > 0.8 ? 'rock' : 'tree'
-                    });
-                }
+            SCENERY = [];
+            ANIMALS = [];
+            BOUNDARY_OBJECTS = [];
+
+            // 1. Place boundaries (Fences)
+            // REMOVED OUTER FENCES PER REQUEST (User: "I don't want fence around my island")
+            
+            // Pasture Fence (Right side of the map)
+            const pastureRect = { x: 150, y: -200, w: 400, h: 500 };
+            const spacing = 40;
+            for(let x = pastureRect.x; x <= pastureRect.x + pastureRect.w; x += spacing) {
+                if(x > pastureRect.x + 100 && x < pastureRect.x + 180 && y === pastureRect.y + pastureRect.h) continue; // Leave a gate
+                BOUNDARY_OBJECTS.push({x: x, y: pastureRect.y, type: 'fence'});
+                BOUNDARY_OBJECTS.push({x: x, y: pastureRect.y + pastureRect.h, type: 'fence'});
             }
-            // Specific placement to make it look nice
-            SCENERY.push({x: -120, y: -50, type: 'tree'});
-            SCENERY.push({x: -160, y: -30, type: 'tree'});
-            SCENERY.push({x: 200, y: -50, type: 'tree'});
+            for(let y = pastureRect.y; y <= pastureRect.y + pastureRect.h; y += spacing) {
+                BOUNDARY_OBJECTS.push({x: pastureRect.x, y: y, type: 'fence'});
+                BOUNDARY_OBJECTS.push({x: pastureRect.x + pastureRect.w, y: y, type: 'fence'});
+            }
+
+            // 2. Place Initial Animals in Pasture
+            createAnimal('cow', 250, 0);
+            createAnimal('cow', 400, 100);
+            createAnimal('chicken', 200, -100);
+            createAnimal('chicken', 220, -80);
+            createAnimal('chicken', 180, -120);
+            createAnimal('horse', 350, -50);
+            createAnimal('sheep', 300, 150);
+            createAnimal('sheep', 450, 200);
+
+            // 3. Place Scenery (Trees, rocks)
+            // Fill outer areas
+            for(let i=0; i<100; i++) {
+                const x = Math.random() * (WORLD_LIMITS.maxX - WORLD_LIMITS.minX) + WORLD_LIMITS.minX;
+                const y = Math.random() * (WORLD_LIMITS.maxY - WORLD_LIMITS.minY) + WORLD_LIMITS.minY;
+                
+                // Avoid placing inside the main farm area (simple rectangular check)
+                if(x > -400 && x < 600 && y > -350 && y < 400) continue;
+
+                SCENERY.push({
+                    x: x,
+                    y: y,
+                    type: Math.random() > 0.7 ? 'rock' : 'tree'
+                });
+            }
+            // Place some specific nice-looking ones
+            SCENERY.push({x: -150, y: -250, type: 'tree'}); // Near house
+            SCENERY.push({x: 80, y: -250, type: 'tree'});  // Near house
+            SCENERY.push({x: -400, y: -200, type: 'rock'}); // Near top field
         }
 
         /**
@@ -555,46 +687,62 @@
         function applySeason() {
             const newSeason = SEASONS[gameState.season.current];
             COLORS = {...SEASON_PALETTES[newSeason]};
-            seasonText.innerText = newSeason;
+            if(seasonBtn) seasonBtn.innerText = newSeason; // Update button text
             console.log("Season changed to " + newSeason);
         }
 
-        seasonUi.addEventListener('click', nextSeason);
+        if(seasonBtn) seasonBtn.addEventListener('click', nextSeason);
 
 
         /**
-         * EDITOR LOGIC
+         * SETTINGS & EDITOR LOGIC
          */
-        const editorToolbar = document.getElementById('editor-toolbar');
-        const toggleEditorBtn = document.getElementById('toggle-editor');
 
-        toggleEditorBtn.addEventListener('click', () => {
+        // Initial Visibility Check
+        if (!SHOW_SETTINGS_UI) {
+            settingsPanel.style.display = 'none';
+        }
+
+        // Toggle Panel Minimize
+        panelHeader.addEventListener('click', () => {
+            settingsPanel.classList.toggle('minimized');
+            toggleIcon.innerText = settingsPanel.classList.contains('minimized') ? '▶' : '▼';
+        });
+
+        // Toggle Edit Mode
+        editorToggleBtn.addEventListener('click', () => {
             gameState.editor.active = !gameState.editor.active;
-            editorToolbar.style.display = gameState.editor.active ? 'flex' : 'none';
-            toggleEditorBtn.innerText = gameState.editor.active ? 'Done Editing' : 'Edit Map';
-            toggleEditorBtn.style.background = gameState.editor.active ? '#e74c3c' : '#fff';
-            toggleEditorBtn.style.color = gameState.editor.active ? '#fff' : '#000';
+            
+            if(gameState.editor.active) {
+                editorToggleBtn.innerText = "Disable Editing";
+                editorToggleBtn.classList.add('active');
+                editorTools.style.display = 'grid';
+            } else {
+                editorToggleBtn.innerText = "Enable Editing";
+                editorToggleBtn.classList.remove('active');
+                editorTools.style.display = 'none';
+            }
         });
 
         window.setTool = function(tool) {
             gameState.editor.tool = tool;
             // Update UI
-            document.querySelectorAll('#editor-toolbar .editor-btn').forEach(btn => {
-                if(btn.innerText.toLowerCase().includes(tool)) {
+            document.querySelectorAll('#editor-tools .tool-btn').forEach(btn => {
+                // Crude check for active class based on onclick attr
+                if(btn.outerHTML.includes(tool)) {
                     btn.classList.add('active');
-                    btn.style.background = '#f1c40f';
-                } else if(!btn.innerText.includes('Export')) {
+                } else {
                     btn.classList.remove('active');
-                    btn.style.background = '#fff';
                 }
             });
         };
 
         window.exportMap = function() {
-            const data = JSON.stringify(SCENERY);
+            // Export both Scenery and Animals
+            const data = JSON.stringify({ scenery: SCENERY, animals: ANIMALS });
             // Copy to clipboard
             navigator.clipboard.writeText(data).then(() => {
-                alert('Map data copied to clipboard! Paste it into the SCENERY array in the code to save permanently.');
+                alert('Map data copied to clipboard! You can save this JSON.');
             });
             console.log(data);
         };
@@ -615,16 +763,25 @@
             
             const worldX = Math.round(clickX + gameState.camera.x);
             const worldY = Math.round(clickY + gameState.camera.y);
+            const clickThreshold = 30;
 
             if (gameState.editor.tool === 'erase') {
-                // Find closest object
-                const clickThreshold = 30;
-                const idx = SCENERY.findIndex(s => Math.hypot(s.x - worldX, s.y - worldY) < clickThreshold);
+                // Find closest object in SCENERY
+                let idx = SCENERY.findIndex(s => Math.hypot(s.x - worldX, s.y - worldY) < clickThreshold);
                 if (idx !== -1) {
                     SCENERY.splice(idx, 1);
+                } else {
+                    // If not found, check ANIMALS
+                    idx = ANIMALS.findIndex(a => Math.hypot(a.x - worldX, a.y - worldY) < clickThreshold);
+                    if (idx !== -1) {
+                        ANIMALS.splice(idx, 1);
+                    }
                 }
+            } else if (['cow', 'chicken', 'horse', 'sheep'].includes(gameState.editor.tool)) {
+                // Add animal
+                createAnimal(gameState.editor.tool, worldX, worldY);
             } else {
-                // Add object
+                // Add scenery (tree, rock, flower, plant)
                 SCENERY.push({
                     x: worldX,
                     y: worldY,
@@ -692,11 +849,12 @@
             resize();
             window.addEventListener('resize', resize);
             
-            // Start player near the house
-            gameState.player.x = 70;
-            gameState.player.y = 200;
-
             initScenery();
+
+            // Start player in front of the new house location
+            gameState.player.x = 0;
+            gameState.player.y = -150;
+
             requestAnimationFrame(loop);
         }
 
@@ -714,6 +872,46 @@
             if (gameState.season.timer >= SEASON_DURATION) {
                 nextSeason();
             }
+
+            // -- ANIMAL LOGIC --
+            ANIMALS.forEach(animal => {
+                if (animal.isMoving) {
+                    animal.moveTimer -= deltaTime;
+                    if (animal.moveTimer <= 0) {
+                        animal.isMoving = false;
+                        animal.frame = 0;
+                    } else {
+                        // Move
+                        let dx = 0, dy = 0;
+                        if (animal.dir === 'up') dy = -ANIMAL_SPEED;
+                        if (animal.dir === 'down') dy = ANIMAL_SPEED;
+                        if (animal.dir === 'left') dx = -ANIMAL_SPEED;
+                        if (animal.dir === 'right') dx = ANIMAL_SPEED;
+
+                        let newX = animal.x + dx;
+                        let newY = animal.y + dy;
+
+                        // Simple boundary check (keep them roughly in the world)
+                        // A real system would check against fences specifically
+                        if (newX < WORLD_LIMITS.minX + 20 || newX > WORLD_LIMITS.maxX - 20) newX = animal.x;
+                        if (newY < WORLD_LIMITS.minY + 20 || newY > WORLD_LIMITS.maxY - 20) newY = animal.y;
+                        
+                        animal.x = newX;
+                        animal.y = newY;
+                        
+                        // Animate
+                        animal.frame = (animal.frame + deltaTime * 0.01) % 2; // Simple 2-frame animation
+                    }
+                } else {
+                    // Randomly start moving
+                    if (Math.random() < ANIMAL_MOVE_CHANCE) {
+                        animal.isMoving = true;
+                        animal.moveTimer = 1000 + Math.random() * 2000; // Move for 1-3 seconds
+                        const dirs = ['up', 'down', 'left', 'right'];
+                        animal.dir = dirs[Math.floor(Math.random() * dirs.length)];
+                    }
+                }
+            });
             // ------------------
 
             const p = gameState.player;
@@ -846,8 +1044,10 @@
 
             // Sort entities by Y for depth sorting (pseudo-3D)
             const entities = [
-                ...SCENERY.map(s => ({...s, drawType: 'scenery', z: s.y + 20})), 
+                ...SCENERY.map(s => ({...s, drawType: 'scenery', z: s.y})),
+                ...BOUNDARY_OBJECTS.map(b => ({...b, drawType: 'fence', z: b.y + 10})),
                 ...ZONES.map(z => ({...z, drawType: 'zone', z: z.y + z.collisionBox.h + z.collisionBox.y})),
+                ...ANIMALS.map(a => ({...a, drawType: 'animal', z: a.y + 2})), // Add animals
                 { drawType: 'player', z: gameState.player.y + gameState.player.h }
             ];
 
@@ -855,7 +1055,9 @@
 
             entities.forEach(e => {
                 if(e.drawType === 'scenery') drawScenery(e);
+                if(e.drawType === 'fence') drawFence(e);
                 if(e.drawType === 'zone') drawZone(e);
+                if(e.drawType === 'animal') drawAnimal(e);
                 if(e.drawType === 'player') drawPlayer();
             });
 
@@ -887,7 +1089,13 @@
                 const worldY = gameState.editor.mouseY + gameState.camera.y;
                 
                 ctx.globalAlpha = 0.5; // Ghost effect
-                drawScenery({x: worldX, y: worldY, type: gameState.editor.tool});
+                
+                if (['cow', 'chicken', 'horse', 'sheep'].includes(gameState.editor.tool)) {
+                    drawAnimal({x: worldX, y: worldY, type: gameState.editor.tool, isMoving: false, frame: 0});
+                } else {
+                    drawScenery({x: worldX, y: worldY, type: gameState.editor.tool});
+                }
+                
                 ctx.globalAlpha = 1.0;
                 
                 // Cursor circle
@@ -961,6 +1169,16 @@
             }
         }
 
+        function drawFence(obj) {
+             // Simple post
+             ctx.fillStyle = COLORS.woodDark;
+             ctx.fillRect(obj.x, obj.y - 15, 8, 20);
+             // Horizontal rails
+             ctx.fillStyle = COLORS.wood;
+             ctx.fillRect(obj.x - 10, obj.y - 10, 42, 4); // Connects to next post
+             ctx.fillRect(obj.x - 10, obj.y - 2, 42, 4);
+        }
+
         function drawScenery(obj) {
             if(obj.type === 'tree') {
                 // Trunk
@@ -993,7 +1211,90 @@
                 ctx.beginPath();
                 ctx.arc(obj.x, obj.y, 1.5, 0, Math.PI*2);
                 ctx.fill();
+            } else if (obj.type === 'plant') {
+                // Simple generic crop/plant
+                ctx.fillStyle = COLORS.cropLeaf;
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y - 4, 6, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = COLORS.cropFruit[0]; // Just use first fruit color
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y - 8, 3, 0, Math.PI*2);
+                ctx.fill();
             }
+        }
+
+        function drawAnimal(animal) {
+            const x = animal.x;
+            const y = animal.y;
+            const colors = ANIMAL_COLORS[animal.type];
+            const frameOffset = animal.isMoving && Math.floor(animal.frame) === 1 ? 2 : 0;
+
+            ctx.save();
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + 4, 10, 5, 0, 0, Math.PI*2);
+            ctx.fill();
+
+            if (animal.type === 'cow') {
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 14, y - 20, 28, 20); // Body
+                ctx.fillStyle = colors.spots;
+                ctx.fillRect(x - 10, y - 18, 8, 10); // Spot
+                ctx.fillRect(x + 4, y - 15, 6, 8); // Spot
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 16, y - 24, 14, 14); // Head
+                ctx.fillStyle = colors.snout;
+                ctx.fillRect(x - 16, y - 14, 14, 4); // Snout
+                // Legs
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 12, y, 6, 6 + frameOffset);
+                ctx.fillRect(x + 6, y, 6, 6 - frameOffset);
+
+            } else if (animal.type === 'chicken') {
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 6, y - 10, 12, 10); // Body
+                ctx.fillStyle = colors.comb;
+                ctx.fillRect(x - 2, y - 12, 4, 2); // Comb
+                ctx.fillStyle = colors.beak;
+                ctx.fillRect(x + 4, y - 8, 2, 2); // Beak
+                // Legs
+                ctx.fillStyle = '#e67e22';
+                ctx.fillRect(x - 4, y, 2, 4 + frameOffset);
+                ctx.fillRect(x + 2, y, 2, 4 - frameOffset);
+                
+            } else if (animal.type === 'horse') {
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 14, y - 22, 28, 18); // Body
+                ctx.fillStyle = colors.mane;
+                ctx.fillRect(x - 16, y - 28, 6, 14); // Mane/Neck
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 18, y - 28, 10, 12); // Head
+                ctx.fillStyle = colors.snout;
+                ctx.fillRect(x - 18, y - 18, 6, 4); // Snout
+                 // Legs
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 12, y - 4, 6, 8 + frameOffset);
+                ctx.fillRect(x + 6, y - 4, 6, 8 - frameOffset);
+
+            } else if (animal.type === 'sheep') {
+                ctx.fillStyle = colors.body;
+                 // Woolly Body (using circles for fluffiness)
+                ctx.beginPath(); ctx.arc(x - 5, y - 10, 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x + 5, y - 10, 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y - 14, 8, 0, Math.PI*2); ctx.fill();
+                
+                ctx.fillStyle = colors.head;
+                ctx.fillRect(x - 14, y - 18, 10, 10); // Head
+                // Legs
+                ctx.fillStyle = colors.legs;
+                ctx.fillRect(x - 10, y - 4, 4, 8 + frameOffset);
+                ctx.fillRect(x + 6, y - 4, 4, 8 - frameOffset);
+            }
+
+            ctx.restore();
         }
 
         function drawZone(zone) {
