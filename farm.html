@@ -519,16 +519,15 @@
                 door: { x: 70, y: 130 },
                 content: `
                     <h2>About Me</h2>
-                    <p>Hi! I'm <strong>Alex</strong>, a passionate Full Stack Developer who loves building interactive web experiences.</p>
-                    <p>Just like a farmer tends to their crops, I tend to my code—cultivating clean, efficient, and scalable solutions.</p>
+                    <p>Hi! I'm <strong>Louis</strong>, I'm a full-stack web developer with a strong focus on web technologies.</p>
                     <h3>Skills</h3>
                     <ul>
-                        <li>JavaScript (React, Node.js)</li>
-                        <li>Python (Django, Flask)</li>
+                        <li>JavaScript, TypeScript (React, Node.js, Angular, Backbone, ...)</li>
+                        <li>Ruby on Rails</li>
+                        <li>HTML, CSS</li>
                         <li>Database Design (SQL, NoSQL)</li>
-                        <li>Pixel Art & Game Dev</li>
+                        <li>Cloud platform (AWS)</li>
                     </ul>
-                    <p>Welcome to my little corner of the internet!</p>
                 `
             },
             {
@@ -542,15 +541,15 @@
                 content: `
                     <h2>Projects Field</h2>
                     <p>Here is what I've been growing lately:</p>
-                    
-                    <h3>🌾 Crop Analyzer AI</h3>
-                    <p>A machine learning model that detects plant diseases from leaf images. Built with TensorFlow and Python.</p>
 
-                    <h3>🚜 Auto-Harvester script</h3>
-                    <p>An automation tool for optimizing workflows in CI/CD pipelines. Saved my team 10 hours a week!</p>
+                    <h3>🧬 Cytobank</h3>
+                    <p>A cloud-based Flow Cytometry data analysis platform.</p>
 
-                    <h3>🐔 Co-op Planner</h3>
-                    <p>A real-time collaborative task board using WebSockets and React.</p>
+                    <h3>🔁 Aldon Lifecycle Management</h3>
+                    <p>A Software Life Management tool on IBM i.</p>
+
+                    <h3>🧑‍💻 Zowe Code Editor</h3>
+                    <p>A plug-in of Zowe running on IBM mainframe.</p>
                 `
             },
             {
@@ -583,15 +582,13 @@
                 collisionBox: { x: 0, y: 0, w: 30, h: 50 },
                 door: { x: 15, y: 55 },
                 content: `
-                    <h2>Resume & Contact</h2>
-                    <p><strong>Email:</strong> alex@pixelvalley.dev</p>
-                    <p><strong>GitHub:</strong> github.com/alexdev</p>
+                    <h2>Contact Me</h2>
+                    <p><strong>Email:</strong> louisgh.cn@gmail.com</p>
                     <hr>
-                    <h3>Experience</h3>
-                    <p><strong>Senior Dev @ Joja Corp</strong> (2020 - Present)<br>Leading frontend migration to React.</p>
-                    <p><strong>Freelance Developer</strong> (2018 - 2020)<br>Built e-commerce sites for local businesses.</p>
-                    <h3>Education</h3>
-                    <p>B.S. Computer Science, State University</p>
+                    <h3>Social Medias</h3>
+                    <p><strong>GitHub:</strong> github.com/louis-7</p>
+                    <p><strong>Dev.to:</strong> dev.to/louis7</p>
+                    <p><strong>LinkedIn:</strong> www.linkedin.com/in/louis360</p>
                 `
             }
         ];
@@ -898,11 +895,54 @@
         /**
          * GAME LOGIC
          */
+        async function fetchBlogs() {
+            const boardZone = ZONES.find(z => z.id === 'board');
+            if(!boardZone) return;
+
+            // Show loading state
+            boardZone.content = `<h2>Community Board (Blog)</h2><p>Loading articles...</p>`;
+
+            try {
+                const response = await fetch('https://dev.to/api/articles?username=louis7');
+                const data = await response.json();
+                
+                let html = `<h2>Community Board (Blog)</h2>`;
+                
+                data.forEach(blog => {
+                    const date = new Date(blog.published_at).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                    });
+                    
+                    html += `
+                        <div class="blog-item" style="margin-bottom: 20px; border-bottom: 1px dashed #8b4513; padding-bottom: 10px;">
+                            <h3 style="margin-bottom: 8px; font-size: 14px;">
+                                <a href="${blog.url}" target="_blank" style="color: #d35400; text-decoration: none;">${blog.title}</a>
+                            </h3>
+                            <p style="font-size: 10px; color: #555; margin: 0;">
+                                ⏳ ${blog.reading_time_minutes} min · 📅 ${date} · ❤️ ${blog.public_reactions_count}
+                            </p>
+                        </div>
+                    `;
+                });
+
+                boardZone.content = html;
+
+            } catch (err) {
+                console.error(err);
+                boardZone.content = `
+                    <h2>Community Board (Blog)</h2>
+                    <p>Failed to load blogs.</p>
+                    <p>Check out <a href="https://dev.to/louis7" target="_blank">dev.to/louis7</a></p>
+                `;
+            }
+        }
+
         function init() {
             resize();
             window.addEventListener('resize', resize);
             
             initScenery();
+            fetchBlogs();
 
             // Start player in front of the new house location
             gameState.player.x = 0;
