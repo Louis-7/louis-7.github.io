@@ -885,6 +885,16 @@
                         if (newX < WORLD_LIMITS.minX + 20 || newX > WORLD_LIMITS.maxX - 20) newX = animal.x;
                         if (newY < WORLD_LIMITS.minY + 20 || newY > WORLD_LIMITS.maxY - 20) newY = animal.y;
                         
+                        // Check collision with zones
+                        // Animal "feet" box approx 20x10 centered at bottom
+                        if (checkZoneCollision({ x: newX - 10, y: newY - 5, w: 20, h: 10 })) {
+                            newX = animal.x;
+                            newY = animal.y;
+                            // Pick new random direction on collision
+                            const dirs = ['up', 'down', 'left', 'right'];
+                            animal.dir = dirs[Math.floor(Math.random() * dirs.length)];
+                        }
+
                         animal.x = newX;
                         animal.y = newY;
                         
@@ -954,22 +964,25 @@
             gameState.camera.y = p.y - canvas.height / 2 + p.h / 2;
         }
 
-        function checkCollision(x, y) {
-            const pBox = { x: x, y: y + PLAYER_SIZE/2, w: PLAYER_SIZE, h: PLAYER_SIZE/2 }; // Collision at feet
-
+        function checkZoneCollision(box) {
             for (let zone of ZONES) {
-                const box = zone.collisionBox;
-                const zoneX = zone.x + box.x;
-                const zoneY = zone.y + box.y;
+                const zBox = zone.collisionBox;
+                const zoneX = zone.x + zBox.x;
+                const zoneY = zone.y + zBox.y;
                 
-                if (pBox.x < zoneX + box.w &&
-                    pBox.x + pBox.w > zoneX &&
-                    pBox.y < zoneY + box.h &&
-                    pBox.y + pBox.h > zoneY) {
+                if (box.x < zoneX + zBox.w &&
+                    box.x + box.w > zoneX &&
+                    box.y < zoneY + zBox.h &&
+                    box.y + box.h > zoneY) {
                     return true;
                 }
             }
             return false;
+        }
+
+        function checkCollision(x, y) {
+            const pBox = { x: x, y: y + PLAYER_SIZE/2, w: PLAYER_SIZE, h: PLAYER_SIZE/2 }; // Collision at feet
+            return checkZoneCollision(pBox);
         }
 
         function checkInteraction() {
