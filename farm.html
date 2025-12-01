@@ -342,6 +342,12 @@
                 <div class="control-group">
                     <button class="pixel-btn" onclick="exportMap()" style="font-size: 8px;">💾 Copy Map JSON</button>
                 </div>
+
+                <!-- Debug -->
+                <div class="control-group">
+                    <span class="control-label">Debug</span>
+                    <button class="pixel-btn" id="debug-toggle-btn">Show Coords</button>
+                </div>
             </div>
         </div>
 
@@ -385,6 +391,7 @@
         const settingsPanel = document.getElementById('settings-panel');
         const seasonBtn = document.getElementById('season-btn');
         const editorToggleBtn = document.getElementById('editor-toggle-btn');
+        const debugToggleBtn = document.getElementById('debug-toggle-btn');
         const editorTools = document.getElementById('editor-tools');
         const panelHeader = document.getElementById('panel-header');
         const toggleIcon = document.getElementById('toggle-icon');
@@ -494,6 +501,9 @@
                 tool: 'tree',
                 mouseX: 0,
                 mouseY: 0
+            },
+            debug: {
+                showCoords: false
             }
         };
 
@@ -523,12 +533,12 @@
             },
             {
                 id: 'field1', // Renamed from garden
-                x: -350, y: -150, w: 210, h: 210, // Resized to match 30px grid (210/30 = 7)
+                x: 100, y: 0, w: 150, h: 150, // Resized to match 30px grid (150/30 = 5)
                 type: 'garden',
                 label: 'Projects Field',
                 interactDist: 80,
-                collisionBox: { x: 0, y: 0, w: 210, h: 210 },
-                door: { x: 105, y: 220 },
+                collisionBox: { x: 0, y: 0, w: 150, h: 150 },
+                door: { x: 75, y: 150 },
                 content: `
                     <h2>Projects Field</h2>
                     <p>Here is what I've been growing lately:</p>
@@ -545,7 +555,7 @@
             },
             {
                 id: 'board',
-                x: 120, y: -100, w: 80, h: 60, // Moved near house
+                x: -250, y: -210, w: 80, h: 60, // Moved near house
                 type: 'sign',
                 label: 'Blog Board',
                 interactDist: 50,
@@ -566,7 +576,7 @@
             },
             {
                 id: 'mailbox',
-                x: 60, y: -140, w: 30, h: 50, // Moved right next to house door
+                x: 130, y: -210, w: 30, h: 50, // Moved right next to house door
                 type: 'mailbox',
                 label: 'Resume/Contact',
                 interactDist: 40,
@@ -643,14 +653,32 @@
                 const y = Math.random() * (WORLD_LIMITS.maxY - WORLD_LIMITS.minY) + WORLD_LIMITS.minY;
                 
                 // Avoid placing inside the main farm area (specific zones)
-                // House area
-                if (x > -100 && x < 100 && y > -320 && y < -140) continue;
-                // Field 1 area
-                if (x > -370 && x < -120 && y > -170 && y < 80) continue;
-                // Pasture area
-                if (x > 130 && x < 570 && y > -220 && y < 320) continue;
-                // Board area
-                if (x > 100 && x < 220 && y > -120 && y < -20) continue;
+                // Dynamic check against all ZONES
+                let hitZone = false;
+                const buffer = 30; // Space around zones
+                
+                for(const zone of ZONES) {
+                    // Check if point is inside zone + buffer
+                    // Note: zone.x/y is top-left of the zone area (including collision box offset usually handled in draw/collision logic, 
+                    // but here ZONES define the main area. Let's use the zone's main rect defined by x,y,w,h)
+                    if (x > zone.x - buffer && x < zone.x + zone.w + buffer &&
+                        y > zone.y - buffer && y < zone.y + zone.h + buffer) {
+                        hitZone = true;
+                        break;
+                    }
+                }
+                
+                // Also avoid the pasture area where animals are initially placed
+                // Since pasture is not a zone, we keep a rough check for it, or we can check if it's near initial animals?
+                // For now, let's keep the pasture check as it was requested to be "main farm area" logic dynamic.
+                // If the user considers pasture part of "main farm area", they should probably add it to ZONES.
+                // However, to be safe and not regress on "animals in pasture", I will keep a check for the area where we spawn animals.
+                // Animals are at: (250,0), (400,100), (200,-100)... roughly x[180, 450], y[-120, 200]
+                // The previous hardcoded pasture check was: x > 130 && x < 570 && y > -220 && y < 320
+                // I will keep this one hardcoded check as "Pasture" is not in ZONES, but I'll comment it clearly.
+                if (x > 130 && x < 570 && y > -220 && y < 320) hitZone = true;
+
+                if (hitZone) continue;
 
                 SCENERY.push({
                     x: x,
@@ -711,6 +739,13 @@
                 editorToggleBtn.classList.remove('active');
                 editorTools.style.display = 'none';
             }
+        });
+
+        // Toggle Debug Mode
+        debugToggleBtn.addEventListener('click', () => {
+            gameState.debug.showCoords = !gameState.debug.showCoords;
+            debugToggleBtn.classList.toggle('active');
+            debugToggleBtn.innerText = gameState.debug.showCoords ? "Hide Coords" : "Show Coords";
         });
 
         window.setTool = function(tool) {
@@ -1127,6 +1162,65 @@
                 ctx.stroke();
             }
 
+            // Draw Coordinate System
+            if (gameState.debug.showCoords) {
+                drawCoordinates();
+            }
+
+            ctx.restore();
+        }
+
+        function drawCoordinates() {
+            ctx.save();
+            ctx.lineWidth = 1;
+            ctx.font = '10px monospace';
+            
+            // Draw Axes
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)'; // X Axis Red
+            ctx.beginPath();
+            ctx.moveTo(WORLD_LIMITS.minX, 0);
+            ctx.lineTo(WORLD_LIMITS.maxX, 0);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(0, 0, 255, 0.5)'; // Y Axis Blue
+            ctx.beginPath();
+            ctx.moveTo(0, WORLD_LIMITS.minY);
+            ctx.lineTo(0, WORLD_LIMITS.maxY);
+            ctx.stroke();
+
+            // Draw Grid/Ticks every 100 units
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            // X Axis Ticks
+            for (let x = Math.ceil(WORLD_LIMITS.minX / 100) * 100; x <= WORLD_LIMITS.maxX; x += 100) {
+                if (x === 0) continue;
+                ctx.beginPath();
+                ctx.moveTo(x, -5);
+                ctx.lineTo(x, 5);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.stroke();
+                ctx.fillText(x, x, 8);
+            }
+
+            // Y Axis Ticks
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            for (let y = Math.ceil(WORLD_LIMITS.minY / 100) * 100; y <= WORLD_LIMITS.maxY; y += 100) {
+                if (y === 0) continue;
+                ctx.beginPath();
+                ctx.moveTo(-5, y);
+                ctx.lineTo(5, y);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.stroke();
+                ctx.fillText(y, 8, y);
+            }
+            
+            // Origin Label
+            ctx.fillStyle = 'yellow';
+            ctx.fillText("(0,0)", 5, 5);
+
             ctx.restore();
         }
 
@@ -1491,11 +1585,11 @@
                     }
                 }
                 
-                // Sign
-                ctx.fillStyle = COLORS.wood;
-                ctx.fillRect(zone.x + zone.w/2 - 2, zone.y - 20, 4, 20);
-                ctx.fillStyle = COLORS.woodDark;
-                ctx.fillRect(zone.x + zone.w/2 - 15, zone.y - 35, 30, 20);
+                // Sign (I don't want a sign for now)
+                // ctx.fillStyle = COLORS.wood;
+                // ctx.fillRect(zone.x + zone.w/2 - 2, zone.y - 20, 4, 20);
+                // ctx.fillStyle = COLORS.woodDark;
+                // ctx.fillRect(zone.x + zone.w/2 - 15, zone.y - 35, 30, 20);
 
             } else if (zone.type === 'sign') {
                 // Legs
