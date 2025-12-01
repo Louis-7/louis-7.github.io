@@ -544,25 +544,6 @@
                 `
             },
             {
-                id: 'field2', // New second field
-                x: -350, y: 100, w: 210, h: 210, // Resized to match 30px grid (210/30 = 7)
-                type: 'garden',
-                label: 'Skills Field',
-                interactDist: 80,
-                collisionBox: { x: 0, y: 0, w: 210, h: 210 },
-                door: { x: 105, y: 220 },
-                content: `
-                    <h2>Skills Field</h2>
-                    <p>Cultivating knowledge is key!</p>
-                    <ul>
-                        <li><strong>Languages:</strong> JavaScript, Python, HTML/CSS, SQL</li>
-                        <li><strong>Frameworks:</strong> React, Node.js, Django, Flask</li>
-                        <li><strong>Tools:</strong> Git, Docker, Webpack</li>
-                        <li><strong>Design:</strong> Figma, Aseprite (for pixel art!)</li>
-                    </ul>
-                `
-            },
-            {
                 id: 'board',
                 x: 120, y: -100, w: 80, h: 60, // Moved near house
                 type: 'sign',
@@ -616,6 +597,7 @@
                 x: x, y: y,
                 type: type,
                 dir: 'down',
+                facing: type === 'chicken' ? 'right' : 'left',
                 frame: 0,
                 isMoving: false,
                 moveTimer: 0
@@ -630,19 +612,19 @@
 
             // 1. Place boundaries (Fences)
             // REMOVED OUTER FENCES PER REQUEST (User: "I don't want fence around my island")
-            
+
             // Pasture Fence (Right side of the map)
-            const pastureRect = { x: 150, y: -200, w: 400, h: 500 };
-            const spacing = 40;
-            for(let x = pastureRect.x; x <= pastureRect.x + pastureRect.w; x += spacing) {
-                if(x > pastureRect.x + 100 && x < pastureRect.x + 180 && y === pastureRect.y + pastureRect.h) continue; // Leave a gate
-                BOUNDARY_OBJECTS.push({x: x, y: pastureRect.y, type: 'fence'});
-                BOUNDARY_OBJECTS.push({x: x, y: pastureRect.y + pastureRect.h, type: 'fence'});
-            }
-            for(let y = pastureRect.y; y <= pastureRect.y + pastureRect.h; y += spacing) {
-                BOUNDARY_OBJECTS.push({x: pastureRect.x, y: y, type: 'fence'});
-                BOUNDARY_OBJECTS.push({x: pastureRect.x + pastureRect.w, y: y, type: 'fence'});
-            }
+            // const pastureRect = { x: 150, y: -200, w: 400, h: 500 };
+            // const spacing = 40;
+            // for(let x = pastureRect.x; x <= pastureRect.x + pastureRect.w; x += spacing) {
+            //     if(x > pastureRect.x + 100 && x < pastureRect.x + 180 && y === pastureRect.y + pastureRect.h) continue; // Leave a gate
+            //     BOUNDARY_OBJECTS.push({x: x, y: pastureRect.y, type: 'fence'});
+            //     BOUNDARY_OBJECTS.push({x: x, y: pastureRect.y + pastureRect.h, type: 'fence'});
+            // }
+            // for(let y = pastureRect.y; y <= pastureRect.y + pastureRect.h; y += spacing) {
+            //     BOUNDARY_OBJECTS.push({x: pastureRect.x, y: y, type: 'fence'});
+            //     BOUNDARY_OBJECTS.push({x: pastureRect.x + pastureRect.w, y: y, type: 'fence'});
+            // }
 
             // 2. Place Initial Animals in Pasture
             createAnimal('cow', 250, 0);
@@ -660,8 +642,15 @@
                 const x = Math.random() * (WORLD_LIMITS.maxX - WORLD_LIMITS.minX) + WORLD_LIMITS.minX;
                 const y = Math.random() * (WORLD_LIMITS.maxY - WORLD_LIMITS.minY) + WORLD_LIMITS.minY;
                 
-                // Avoid placing inside the main farm area (simple rectangular check)
-                if(x > -400 && x < 600 && y > -350 && y < 400) continue;
+                // Avoid placing inside the main farm area (specific zones)
+                // House area
+                if (x > -100 && x < 100 && y > -320 && y < -140) continue;
+                // Field 1 area
+                if (x > -370 && x < -120 && y > -170 && y < 80) continue;
+                // Pasture area
+                if (x > 130 && x < 570 && y > -220 && y < 320) continue;
+                // Board area
+                if (x > 100 && x < 220 && y > -120 && y < -20) continue;
 
                 SCENERY.push({
                     x: x,
@@ -885,8 +874,8 @@
                         let dx = 0, dy = 0;
                         if (animal.dir === 'up') dy = -ANIMAL_SPEED;
                         if (animal.dir === 'down') dy = ANIMAL_SPEED;
-                        if (animal.dir === 'left') dx = -ANIMAL_SPEED;
-                        if (animal.dir === 'right') dx = ANIMAL_SPEED;
+                        if (animal.dir === 'left') { dx = -ANIMAL_SPEED; animal.facing = 'left'; }
+                        if (animal.dir === 'right') { dx = ANIMAL_SPEED; animal.facing = 'right'; }
 
                         let newX = animal.x + dx;
                         let newY = animal.y + dy;
@@ -1231,6 +1220,21 @@
             const frameOffset = animal.isMoving && Math.floor(animal.frame) === 1 ? 2 : 0;
 
             ctx.save();
+
+            // Determine flip based on facing direction
+            let flip = false;
+            // Default facing: Chicken=Right, Others=Left
+            if (animal.type === 'chicken') {
+                 if (animal.facing === 'left') flip = true;
+            } else {
+                 if (animal.facing === 'right') flip = true;
+            }
+
+            if (flip) {
+                ctx.translate(x, y);
+                ctx.scale(-1, 1);
+                ctx.translate(-x, -y);
+            }
             
             // Shadow
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
@@ -1239,59 +1243,153 @@
             ctx.fill();
 
             if (animal.type === 'cow') {
+                // Body
                 ctx.fillStyle = colors.body;
-                ctx.fillRect(x - 14, y - 20, 28, 20); // Body
+                ctx.fillRect(x - 14, y - 20, 28, 20); 
+                
+                // Spots
                 ctx.fillStyle = colors.spots;
-                ctx.fillRect(x - 10, y - 18, 8, 10); // Spot
-                ctx.fillRect(x + 4, y - 15, 6, 8); // Spot
+                ctx.fillRect(x - 8, y - 18, 10, 8); 
+                ctx.fillRect(x + 6, y - 14, 6, 6); 
+                
+                // Head
                 ctx.fillStyle = colors.body;
-                ctx.fillRect(x - 16, y - 24, 14, 14); // Head
+                ctx.fillRect(x - 18, y - 26, 16, 16); 
+                
+                // Horns
+                ctx.fillStyle = '#d7ccc8';
+                ctx.fillRect(x - 18, y - 28, 4, 4);
+                ctx.fillRect(x - 6, y - 28, 4, 4);
+
+                // Ears
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 20, y - 22, 2, 4);
+                ctx.fillRect(x - 2, y - 22, 2, 4);
+
+                // Snout
                 ctx.fillStyle = colors.snout;
-                ctx.fillRect(x - 16, y - 14, 14, 4); // Snout
+                ctx.fillRect(x - 18, y - 14, 16, 6); 
+                
+                // Eyes
+                ctx.fillStyle = '#000';
+                ctx.fillRect(x - 16, y - 20, 2, 2);
+                ctx.fillRect(x - 8, y - 20, 2, 2);
+
                 // Legs
                 ctx.fillStyle = colors.body;
                 ctx.fillRect(x - 12, y, 6, 6 + frameOffset);
                 ctx.fillRect(x + 6, y, 6, 6 - frameOffset);
+                
+                // Tail
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x + 14, y - 18, 2, 10);
+                ctx.fillStyle = colors.spots;
+                ctx.fillRect(x + 13, y - 8, 4, 4);
 
             } else if (animal.type === 'chicken') {
+                // Body
                 ctx.fillStyle = colors.body;
-                ctx.fillRect(x - 6, y - 10, 12, 10); // Body
+                ctx.fillRect(x - 6, y - 10, 12, 10);
+                
+                // Tail feathers
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 8, y - 12, 4, 6);
+
+                // Wing
+                ctx.fillStyle = '#e0e0e0'; // Slightly darker for wing
+                ctx.fillRect(x - 2, y - 8, 6, 4);
+
+                // Head
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x + 2, y - 14, 6, 6);
+
+                // Comb
                 ctx.fillStyle = colors.comb;
-                ctx.fillRect(x - 2, y - 12, 4, 2); // Comb
+                ctx.fillRect(x + 3, y - 16, 4, 2);
+                ctx.fillRect(x + 4, y - 10, 2, 2); // Wattle
+
+                // Beak
                 ctx.fillStyle = colors.beak;
-                ctx.fillRect(x + 4, y - 8, 2, 2); // Beak
+                ctx.fillRect(x + 8, y - 12, 2, 2);
+
+                // Eye
+                ctx.fillStyle = '#000';
+                ctx.fillRect(x + 6, y - 13, 1, 1);
+
                 // Legs
                 ctx.fillStyle = '#e67e22';
-                ctx.fillRect(x - 4, y, 2, 4 + frameOffset);
-                ctx.fillRect(x + 2, y, 2, 4 - frameOffset);
+                ctx.fillRect(x - 2, y, 2, 4 + frameOffset);
+                ctx.fillRect(x + 4, y, 2, 4 - frameOffset);
                 
             } else if (animal.type === 'horse') {
+                // Body
                 ctx.fillStyle = colors.body;
-                ctx.fillRect(x - 14, y - 22, 28, 18); // Body
+                ctx.fillRect(x - 14, y - 22, 30, 18); 
+                
+                // Neck
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 16, y - 30, 10, 14);
+
+                // Head
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 22, y - 32, 14, 10);
+                
+                // Mane
                 ctx.fillStyle = colors.mane;
-                ctx.fillRect(x - 16, y - 28, 6, 14); // Mane/Neck
+                ctx.fillRect(x - 6, y - 32, 4, 16); // Neck mane
+                ctx.fillRect(x - 16, y - 34, 4, 4); // Top mane
+
+                // Ears
                 ctx.fillStyle = colors.body;
-                ctx.fillRect(x - 18, y - 28, 10, 12); // Head
+                ctx.fillRect(x - 14, y - 34, 2, 4);
+                ctx.fillRect(x - 8, y - 34, 2, 4);
+
+                // Snout
                 ctx.fillStyle = colors.snout;
-                ctx.fillRect(x - 18, y - 18, 6, 4); // Snout
-                 // Legs
+                ctx.fillRect(x - 24, y - 28, 4, 6); 
+
+                // Eye
+                ctx.fillStyle = '#000';
+                ctx.fillRect(x - 18, y - 28, 2, 2);
+
+                // Legs
                 ctx.fillStyle = colors.body;
-                ctx.fillRect(x - 12, y - 4, 6, 8 + frameOffset);
-                ctx.fillRect(x + 6, y - 4, 6, 8 - frameOffset);
+                ctx.fillRect(x - 12, y - 4, 6, 10 + frameOffset);
+                ctx.fillRect(x + 8, y - 4, 6, 10 - frameOffset);
+                
+                // Tail
+                ctx.fillStyle = colors.mane;
+                ctx.fillRect(x + 16, y - 20, 4, 12);
 
             } else if (animal.type === 'sheep') {
-                ctx.fillStyle = colors.body;
-                 // Woolly Body (using circles for fluffiness)
-                ctx.beginPath(); ctx.arc(x - 5, y - 10, 8, 0, Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.arc(x + 5, y - 10, 8, 0, Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.arc(x, y - 14, 8, 0, Math.PI*2); ctx.fill();
-                
-                ctx.fillStyle = colors.head;
-                ctx.fillRect(x - 14, y - 18, 10, 10); // Head
-                // Legs
+                // Legs (draw behind body)
                 ctx.fillStyle = colors.legs;
-                ctx.fillRect(x - 10, y - 4, 4, 8 + frameOffset);
-                ctx.fillRect(x + 6, y - 4, 4, 8 - frameOffset);
+                ctx.fillRect(x - 8, y + 2, 4, 6 + frameOffset);
+                ctx.fillRect(x + 4, y + 2, 4, 6 - frameOffset);
+
+                // Woolly Body
+                ctx.fillStyle = colors.body;
+                // Main fluff
+                ctx.beginPath(); ctx.arc(x, y - 8, 10, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x - 6, y - 6, 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x + 6, y - 6, 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y - 12, 9, 0, Math.PI*2); ctx.fill();
+                
+                // Head
+                ctx.fillStyle = colors.head;
+                ctx.fillRect(x - 14, y - 16, 10, 10); // Face
+                
+                // Ears
+                ctx.fillRect(x - 16, y - 14, 2, 4);
+                ctx.fillRect(x - 4, y - 14, 2, 4);
+
+                // Wool on head
+                ctx.fillStyle = colors.body;
+                ctx.fillRect(x - 14, y - 18, 10, 4);
+
+                // Eye
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(x - 12, y - 14, 2, 2);
             }
 
             ctx.restore();
