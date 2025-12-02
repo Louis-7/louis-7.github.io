@@ -33,6 +33,21 @@ export function Resume() {
         <div className="section-title">Projects</div>
         <div className="project-list">
           <div className="project-title">
+            <span className="project-duration">Jun, 2025 - present</span>
+            <span className="project-name">SnapMind</span>
+          </div>
+          <p>
+            SnapMind is a desktop AI assistant that lets you instantly interact with LLMs from anywhere in your system.
+          </p>
+          <ul>
+            <li>
+              Responsible for the entire product development cycle.
+            </li>
+            <li>
+              Architecture design, front-end and back-end development, CI/CD workflow.
+            </li>
+          </ul>
+          <div className="project-title">
             <span className="project-duration">Jun, 2020 - present</span>
             <span className="project-name">Cytobank</span>
           </div>
