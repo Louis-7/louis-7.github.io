@@ -4,6 +4,7 @@ import Root from '../pages/Root';
 import About from '../pages/About';
 import Blog from '../pages/Blog';
 import Resume from '../pages/Resume';
+import Farm from '../pages/Farm';
 
 export const router = createBrowserRouter([
   {
@@ -23,5 +24,9 @@ export const router = createBrowserRouter([
         element: <Resume />,
       },
     ],
+  },
+  {
+    path: '/farm',
+    element: <Farm />,
   },
 ]);
