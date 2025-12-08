@@ -361,48 +361,7 @@
     <div id="ui-layer">
 
         <!-- NEW SETTINGS MENU (Replaces old Season/Editor UI) -->
-        <div id="settings-panel">
-            <div class="panel-header" id="panel-header">
-                <span>⚙️ MENU</span>
-                <span id="toggle-icon">▼</span>
-            </div>
-            <div class="panel-body">
-                <!-- Season Control -->
-                <div class="control-group">
-                    <span class="control-label">Current Season</span>
-                    <button class="pixel-btn" id="season-btn">SPRING</button>
-                </div>
 
-                <!-- Editor Control -->
-                <div class="control-group">
-                    <span class="control-label">Map Editor</span>
-                    <button class="pixel-btn" id="editor-toggle-btn">Enable Editing</button>
-
-                    <div id="editor-tools">
-                        <button class="tool-btn active" onclick="setTool('tree')">🌲</button>
-                        <button class="tool-btn" onclick="setTool('rock')">🪨</button>
-                        <button class="tool-btn" onclick="setTool('flower')">🌸</button>
-                        <button class="tool-btn" onclick="setTool('plant')">🌿</button> <!-- New Plant -->
-                        <button class="tool-btn" onclick="setTool('cow')">🐄</button>   <!-- New Cow -->
-                        <button class="tool-btn" onclick="setTool('chicken')">🐔</button><!-- New Chicken -->
-                        <button class="tool-btn" onclick="setTool('horse')">🐎</button> <!-- New Horse -->
-                        <button class="tool-btn" onclick="setTool('sheep')">🐏</button> <!-- New Sheep -->
-                        <button class="tool-btn" onclick="setTool('erase')">❌</button>
-                    </div>
-                </div>
-
-                <!-- Export -->
-                <div class="control-group">
-                    <button class="pixel-btn" onclick="exportMap()" style="font-size: 8px;">💾 Copy Map JSON</button>
-                </div>
-
-                <!-- Debug -->
-                <div class="control-group">
-                    <span class="control-label">Debug</span>
-                    <button class="pixel-btn" id="debug-toggle-btn">Show Coords</button>
-                </div>
-            </div>
-        </div>
 
         <div id="interaction-prompt">Press SPACE to Interact</div>
 
@@ -441,13 +400,66 @@
         const closeBtn = document.getElementById('close-btn');
 
         // Settings Elements
-        const settingsPanel = document.getElementById('settings-panel');
-        const seasonBtn = document.getElementById('season-btn');
-        const editorToggleBtn = document.getElementById('editor-toggle-btn');
-        const debugToggleBtn = document.getElementById('debug-toggle-btn');
-        const editorTools = document.getElementById('editor-tools');
-        const panelHeader = document.getElementById('panel-header');
-        const toggleIcon = document.getElementById('toggle-icon');
+        let settingsPanel, seasonBtn, editorToggleBtn, debugToggleBtn, editorTools, panelHeader, toggleIcon;
+
+        const SETTINGS_HTML = `
+        <div id="settings-panel">
+            <div class="panel-header" id="panel-header">
+                <span>⚙️ MENU</span>
+                <span id="toggle-icon">▼</span>
+            </div>
+            <div class="panel-body">
+                <div class="control-group">
+                    <span class="control-label">Current Season</span>
+                    <button class="pixel-btn" id="season-btn">SPRING</button>
+                </div>
+                <div class="control-group">
+                    <span class="control-label">Map Editor</span>
+                    <button class="pixel-btn" id="editor-toggle-btn">Enable Editing</button>
+                    <div id="editor-tools">
+                        <button class="tool-btn active" onclick="setTool('tree')">🌲</button>
+                        <button class="tool-btn" onclick="setTool('rock')">🪨</button>
+                        <button class="tool-btn" onclick="setTool('flower')">🌸</button>
+                        <button class="tool-btn" onclick="setTool('plant')">🌿</button>
+                        <button class="tool-btn" onclick="setTool('cow')">🐄</button>
+                        <button class="tool-btn" onclick="setTool('chicken')">🐔</button>
+                        <button class="tool-btn" onclick="setTool('horse')">🐎</button>
+                        <button class="tool-btn" onclick="setTool('sheep')">🐏</button>
+                        <button class="tool-btn" onclick="setTool('erase')">❌</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <button class="pixel-btn" onclick="exportMap()" style="font-size: 8px;">💾 Copy Map JSON</button>
+                </div>
+                <div class="control-group">
+                    <span class="control-label">Debug</span>
+                    <button class="pixel-btn" id="debug-toggle-btn">Show Coords</button>
+                </div>
+            </div>
+        </div>`;
+
+        window.openSesame = function() {
+            if (document.getElementById('settings-panel')) return;
+
+            const uiLayer = document.getElementById('ui-layer');
+            const prompt = document.getElementById('interaction-prompt');
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = SETTINGS_HTML;
+            uiLayer.insertBefore(tempDiv.firstElementChild, prompt);
+
+            settingsPanel = document.getElementById('settings-panel');
+            seasonBtn = document.getElementById('season-btn');
+            editorToggleBtn = document.getElementById('editor-toggle-btn');
+            debugToggleBtn = document.getElementById('debug-toggle-btn');
+            editorTools = document.getElementById('editor-tools');
+            panelHeader = document.getElementById('panel-header');
+            toggleIcon = document.getElementById('toggle-icon');
+
+            initSettingsListeners();
+
+            if(seasonBtn) seasonBtn.innerText = SEASONS[gameState.season.current];
+            console.log("Developer Mode Enabled");
+        };
 
         // Game constants
         const TILE_SIZE = 48; // Base unit size
@@ -787,45 +799,37 @@
             console.log("Season changed to " + newSeason);
         }
 
-        if(seasonBtn) seasonBtn.addEventListener('click', nextSeason);
+        function initSettingsListeners() {
+            if(seasonBtn) seasonBtn.addEventListener('click', nextSeason);
 
+            // Toggle Panel Minimize
+            panelHeader.addEventListener('click', () => {
+                settingsPanel.classList.toggle('minimized');
+                toggleIcon.innerText = settingsPanel.classList.contains('minimized') ? '▶' : '▼';
+            });
 
-        /**
-         * SETTINGS & EDITOR LOGIC
-         */
+            // Toggle Edit Mode
+            editorToggleBtn.addEventListener('click', () => {
+                gameState.editor.active = !gameState.editor.active;
 
-        // Initial Visibility Check
-        if (!SHOW_SETTINGS_UI) {
-            settingsPanel.style.display = 'none';
+                if(gameState.editor.active) {
+                    editorToggleBtn.innerText = "Disable Editing";
+                    editorToggleBtn.classList.add('active');
+                    editorTools.style.display = 'grid';
+                } else {
+                    editorToggleBtn.innerText = "Enable Editing";
+                    editorToggleBtn.classList.remove('active');
+                    editorTools.style.display = 'none';
+                }
+            });
+
+            // Toggle Debug Mode
+            debugToggleBtn.addEventListener('click', () => {
+                gameState.debug.showCoords = !gameState.debug.showCoords;
+                debugToggleBtn.classList.toggle('active');
+                debugToggleBtn.innerText = gameState.debug.showCoords ? "Hide Coords" : "Show Coords";
+            });
         }
-
-        // Toggle Panel Minimize
-        panelHeader.addEventListener('click', () => {
-            settingsPanel.classList.toggle('minimized');
-            toggleIcon.innerText = settingsPanel.classList.contains('minimized') ? '▶' : '▼';
-        });
-
-        // Toggle Edit Mode
-        editorToggleBtn.addEventListener('click', () => {
-            gameState.editor.active = !gameState.editor.active;
-
-            if(gameState.editor.active) {
-                editorToggleBtn.innerText = "Disable Editing";
-                editorToggleBtn.classList.add('active');
-                editorTools.style.display = 'grid';
-            } else {
-                editorToggleBtn.innerText = "Enable Editing";
-                editorToggleBtn.classList.remove('active');
-                editorTools.style.display = 'none';
-            }
-        });
-
-        // Toggle Debug Mode
-        debugToggleBtn.addEventListener('click', () => {
-            gameState.debug.showCoords = !gameState.debug.showCoords;
-            debugToggleBtn.classList.toggle('active');
-            debugToggleBtn.innerText = gameState.debug.showCoords ? "Hide Coords" : "Show Coords";
-        });
 
         window.setTool = function(tool) {
             gameState.editor.tool = tool;
