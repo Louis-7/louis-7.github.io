@@ -2,6 +2,7 @@ import profileImg from '../../assets/profile.png';
 
 import './About.css';
 import Icon from '../../components/Icon';
+import PageCurl from '../../components/PageCurl';
 
 export function About() {
   return (
@@ -58,6 +59,7 @@ export function About() {
 
         </div>
       </div>
+      <PageCurl />
     </div>
   );
 }

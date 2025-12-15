@@ -1,0 +1,29 @@
+.page-curl-container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-bottom: 60px solid #e0e0e0; /* Color of the curl (back of page) */
+  border-left: 60px solid transparent;
+  cursor: pointer;
+  box-shadow: -5px -5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 1000;
+}
+
+.page-curl-container:hover {
+  border-bottom-width: 120px;
+  border-left-width: 120px;
+}
+
+/* Optional: Add a pseudo-element to simulate the shadow under the curl on the page */
+.page-curl-container::before {
+  content: '';
+  position: absolute;
+  top: 60px; /* Match initial border-bottom width */
+  left: -60px; /* Match initial border-left width */
+  width: 100%;
+  height: 100%;
+  /* This is tricky with borders. Let's keep it simple first. */
+}
