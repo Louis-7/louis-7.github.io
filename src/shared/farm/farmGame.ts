@@ -224,6 +224,11 @@ const ZONES: any[] = [
             <h2>Projects Field</h2>
             <p>Here is what I've been growing lately:</p>
 
+            <h3>
+                <a href="https://github.com/Snap-Mind/snap-mind" target="_blank" style="color: #d35400; text-decoration: none;">🧠 SnapMind</a>
+            </h3>
+            <p>A cross-platform desktop AI assistant that lets you translate, rewrite, summarize, and brainstorm with just a hotkey.</p>
+
             <h3>🧬 Cytobank</h3>
             <p>A cloud-based Flow Cytometry data analysis platform.</p>
 
@@ -245,14 +250,8 @@ const ZONES: any[] = [
         content: `
             <h2>Community Board (Blog)</h2>
 
-            <h3>📅 Oct 20, 2023: Moving to VIM</h3>
-            <p>Why I abandoned my mouse and how it changed my workflow forever.</p>
-
-            <h3>📅 Sep 15, 2023: Canvas API 101</h3>
-            <p>A tutorial on how to build exactly what you are looking at right now!</p>
-
-            <h3>📅 Aug 01, 2023: burnout.js</h3>
-            <p>Managing mental health in a fast-paced tech environment.</p>
+            <h3>📅 Fetching</h3>
+            <p>Loading my blogs...</p>
         `
     },
     {
