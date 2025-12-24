@@ -264,12 +264,12 @@ const ZONES: any[] = [
         door: { x: 15, y: 55 },
         content: `
             <h2>Contact Me</h2>
-            <p><strong>Email:</strong> louisgh.cn@gmail.com</p>
+            <p><strong>Email:</strong> <a href="mailto:louisgh.cn@gmail.com" style="color: #d35400;">louisgh.cn@gmail.com</a></p>
             <hr>
             <h3>Social Medias</h3>
-            <p><strong>GitHub:</strong> github.com/louis-7</p>
-            <p><strong>Dev.to:</strong> dev.to/louis7</p>
-            <p><strong>LinkedIn:</strong> www.linkedin.com/in/louis360</p>
+            <p><strong>GitHub:</strong> <a href="https://github.com/louis-7" target="_blank" style="color: #d35400;">github.com/louis-7</a></p>
+            <p><strong>Dev.to:</strong> <a href="https://dev.to/louis7" target="_blank" style="color: #d35400;">dev.to/louis7</a></p>
+            <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/louis360" target="_blank" style="color: #d35400;">linkedin.com/in/louis360</a></p>
         `
     }
 ];
