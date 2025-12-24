@@ -523,6 +523,11 @@ window.addEventListener('keydown', (e) => {
         gameState.keys[e.key] = true;
     }
 
+    // Close modal with ESC key
+    if(e.key === 'Escape' && gameState.isModalOpen) {
+        closeModal();
+    }
+
     // Interaction triggers
     if((e.key === ' ' || e.key === 'Enter') && !gameState.isModalOpen && gameState.interactionTarget) {
         openModal(gameState.interactionTarget.content);
@@ -536,11 +541,10 @@ window.addEventListener('keyup', (e) => {
 });
 
 // Touch Controls
-const btnUp = document.getElementById('btn-up')!;
-const btnDown = document.getElementById('btn-down')!;
-const btnLeft = document.getElementById('btn-left')!;
-const btnRight = document.getElementById('btn-right')!;
+const joystick = document.getElementById('joystick')!;
+const joystickKnob = document.getElementById('joystick-knob')!;
 const btnAction = document.getElementById('btn-action')!;
+const btnClose = document.getElementById('btn-close')!;
 const mobileControls = document.getElementById('mobile-controls')!;
 
 // Detect touch device roughly
@@ -549,20 +553,94 @@ if('ontouchstart' in window || navigator.maxTouchPoints > 0) {
     promptEl.innerText = "Tap 'A' to Interact";
 }
 
-const addTouch = (elem: HTMLElement, key: string) => {
-    elem.addEventListener('touchstart', (e) => { e.preventDefault(); gameState.keys[key] = true; });
-    elem.addEventListener('touchend', (e) => { e.preventDefault(); gameState.keys[key] = false; });
-};
+// Virtual Joystick Logic
+let joystickActive = false;
+let joystickCenter = { x: 0, y: 0 };
+const joystickMaxDistance = 35; // Max distance knob can move from center
 
-addTouch(btnUp, 'ArrowUp');
-addTouch(btnDown, 'ArrowDown');
-addTouch(btnLeft, 'ArrowLeft');
-addTouch(btnRight, 'ArrowRight');
+function updateJoystickPosition(touchX: number, touchY: number) {
+    const rect = joystick.getBoundingClientRect();
+    joystickCenter = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+    };
+
+    let deltaX = touchX - joystickCenter.x;
+    let deltaY = touchY - joystickCenter.y;
+
+    // Calculate distance from center
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    // Clamp to max distance
+    if (distance > joystickMaxDistance) {
+        deltaX = (deltaX / distance) * joystickMaxDistance;
+        deltaY = (deltaY / distance) * joystickMaxDistance;
+    }
+
+    // Update knob position
+    joystickKnob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+
+    // Reset all direction keys
+    gameState.keys['ArrowUp'] = false;
+    gameState.keys['ArrowDown'] = false;
+    gameState.keys['ArrowLeft'] = false;
+    gameState.keys['ArrowRight'] = false;
+
+    // Set direction keys based on joystick position (with dead zone)
+    const deadZone = 15;
+    if (distance > deadZone) {
+        if (deltaY < -deadZone * 0.5) gameState.keys['ArrowUp'] = true;
+        if (deltaY > deadZone * 0.5) gameState.keys['ArrowDown'] = true;
+        if (deltaX < -deadZone * 0.5) gameState.keys['ArrowLeft'] = true;
+        if (deltaX > deadZone * 0.5) gameState.keys['ArrowRight'] = true;
+    }
+}
+
+function resetJoystick() {
+    joystickActive = false;
+    joystickKnob.style.transform = 'translate(-50%, -50%)';
+    gameState.keys['ArrowUp'] = false;
+    gameState.keys['ArrowDown'] = false;
+    gameState.keys['ArrowLeft'] = false;
+    gameState.keys['ArrowRight'] = false;
+}
+
+joystick.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    joystickActive = true;
+    const touch = e.touches[0];
+    updateJoystickPosition(touch.clientX, touch.clientY);
+});
+
+joystick.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (joystickActive) {
+        const touch = e.touches[0];
+        updateJoystickPosition(touch.clientX, touch.clientY);
+    }
+});
+
+joystick.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    resetJoystick();
+});
+
+joystick.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    resetJoystick();
+});
 
 btnAction.addEventListener('touchstart', (e) => {
     e.preventDefault();
     if(!gameState.isModalOpen && gameState.interactionTarget) {
         openModal(gameState.interactionTarget.content);
+    }
+});
+
+btnClose.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if(gameState.isModalOpen) {
+        closeModal();
     }
 });
 
