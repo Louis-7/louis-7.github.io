@@ -523,9 +523,10 @@ window.addEventListener('keydown', (e) => {
         gameState.keys[e.key] = true;
     }
 
-    // Close modal with ESC key
-    if(e.key === 'Escape' && gameState.isModalOpen) {
+    // Close modal with ESC or Space key
+    if((e.key === 'Escape' || e.key === ' ') && gameState.isModalOpen) {
         closeModal();
+        return;
     }
 
     // Interaction triggers
