@@ -213,10 +213,22 @@
             font-size: 14px;
         }
 
-        #close-btn {
+        #close-area {
             position: absolute;
             top: 10px;
             right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #close-hint {
+            font-size: 12px;
+            color: #8b4513;
+            opacity: 0.7;
+        }
+
+        #close-btn {
             background: #e74c3c;
             border: 2px solid #c0392b;
             color: white;
@@ -244,38 +256,40 @@
             box-sizing: border-box;
         }
 
-        .d-pad {
+        /* Virtual Joystick */
+        .joystick-container {
             position: absolute;
             bottom: 20px;
             left: 20px;
             width: 120px;
             height: 120px;
             pointer-events: auto;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
         }
 
-        .d-btn {
+        .joystick-knob {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: none;
         }
-        .d-btn:active { background: rgba(255, 255, 255, 0.6); }
 
-        .d-up { top: 0; left: 40px; }
-        .d-down { bottom: 0; left: 40px; }
-        .d-left { top: 40px; left: 0; }
-        .d-right { top: 40px; right: 0; }
+        .joystick-knob:active {
+            background: rgba(255, 255, 255, 0.7);
+        }
 
         .action-btn {
             position: absolute;
-            bottom: 40px;
-            right: 40px;
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 200, 0, 0.4);
-            border: 2px solid rgba(255, 200, 0, 0.6);
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             pointer-events: auto;
             display: flex;
@@ -285,7 +299,23 @@
             font-size: 12px;
             user-select: none;
         }
-        .action-btn:active { background: rgba(255, 200, 0, 0.7); }
+
+        /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
+        #btn-action {
+            bottom: 30px;
+            right: 100px;
+            background: rgba(255, 200, 0, 0.4);
+            border: 2px solid rgba(255, 200, 0, 0.6);
+        }
+        #btn-action:active { background: rgba(255, 200, 0, 0.7); }
+
+        #btn-close {
+            bottom: 70px;
+            right: 30px;
+            background: rgba(231, 76, 60, 0.4);
+            border: 2px solid rgba(231, 76, 60, 0.6);
+        }
+        #btn-close:active { background: rgba(231, 76, 60, 0.7); }
 
         @keyframes bounce {
             0%, 100% { transform: translate(-50%, 0); }
@@ -346,7 +376,7 @@
         }
 
     </style>
-  <script type="module" crossorigin src="/assets/farm-DniYMpRA.js"></script>
+  <script type="module" crossorigin src="/assets/farm-C0xQ9x6w.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 <body>
@@ -368,19 +398,20 @@
         <div id="interaction-prompt">Press SPACE to Interact</div>
 
         <div id="mobile-controls">
-            <div class="d-pad">
-                <div class="d-btn d-up" id="btn-up"></div>
-                <div class="d-btn d-down" id="btn-down"></div>
-                <div class="d-btn d-left" id="btn-left"></div>
-                <div class="d-btn d-right" id="btn-right"></div>
+            <div class="joystick-container" id="joystick">
+                <div class="joystick-knob" id="joystick-knob"></div>
             </div>
+            <div class="action-btn" id="btn-close">B</div>
             <div class="action-btn" id="btn-action">A</div>
         </div>
     </div>
 
     <div id="modal-overlay">
         <div id="modal-content">
-            <div id="close-btn">X</div>
+            <div id="close-area">
+                <span id="close-hint">[ESC]</span>
+                <div id="close-btn">X</div>
+            </div>
             <div id="modal-body"></div>
         </div>
     </div>
