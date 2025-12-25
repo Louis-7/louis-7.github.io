@@ -250,7 +250,7 @@ const ZONES: any[] = [
         collisionBox: { x: 10, y: 10, w: 60, h: 50 },
         door: { x: 40, y: 65 },
         content: `
-            <h2>Community Board (Blog)</h2>
+            <h2>Community Board</h2>
 
             <h3>📅 Fetching</h3>
             <p>Loading my blogs...</p>
@@ -699,13 +699,13 @@ async function fetchBlogs() {
     if(!boardZone) return;
 
     // Show loading state
-    boardZone.content = `<h2>Community Board (Blog)</h2><p>Loading articles...</p>`;
+    boardZone.content = `<h2>Community Board</h2><p>Loading articles...</p>`;
 
     try {
         const response = await fetch('https://dev.to/api/articles?username=louis7');
         const data = await response.json();
 
-        let html = `<h2>Community Board (Blog)</h2>`;
+        let html = `<h2>Community Board</h2>`;
 
         data.forEach((blog: any) => {
             const date = new Date(blog.published_at).toLocaleDateString('en-US', {
@@ -729,7 +729,7 @@ async function fetchBlogs() {
     } catch (err) {
         console.error(err);
         boardZone.content = `
-            <h2>Community Board (Blog)</h2>
+            <h2>Community Board</h2>
             <p>Failed to load blogs.</p>
             <p>Check out <a href="https://dev.to/louis7" target="_blank">dev.to/louis7</a></p>
         `;
