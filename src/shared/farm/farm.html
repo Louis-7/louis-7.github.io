@@ -17,8 +17,6 @@
             --modal-bg: #fdf1ce;
             --modal-border: #8b4513;
             --text-color: #4a3b2a;
-            /* Dynamic bottom offset - controlled by JS to avoid browser UI */
-            --controls-bottom-offset: 20px;
         }
 
         body, html {
@@ -162,6 +160,7 @@
             pointer-events: none;
             text-align: center;
             white-space: nowrap;
+            z-index: 150;
         }
 
         /* Content Modal */
@@ -249,30 +248,46 @@
         #mobile-controls {
             display: none; /* Shown via JS on touch devices */
             position: fixed;
-            bottom: var(--controls-bottom-offset);
+            bottom: 20px; /* Will be overridden by JS */
             left: 0;
             right: 0;
             width: 100%;
-            height: 200px;
+            height: 180px;
             pointer-events: none;
-            padding: 20px;
+            padding: 0 20px;
             box-sizing: border-box;
             z-index: 200;
-            transition: bottom 0.1s ease-out; /* Smooth transition */
+        }
+
+        /* Interaction prompt inside mobile controls - positioned above buttons */
+        #mobile-interaction-prompt {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+            animation: bounce 1s infinite;
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
         }
 
         /* Virtual Joystick */
         .joystick-container {
             position: absolute;
             bottom: 30px;
-            left: 20px;
+            left: 0;
             width: 120px;
             height: 120px;
             pointer-events: auto;
             background: rgba(255, 255, 255, 0.15);
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            z-index: 201;
         }
 
         .joystick-knob {
@@ -304,13 +319,12 @@
             color: white;
             font-size: 12px;
             user-select: none;
-            z-index: 201;
         }
 
         /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
         #btn-action {
-            bottom: 60px;
-            right: 100px;
+            bottom: 40px;
+            right: 80px;
             background: rgba(255, 200, 0, 0.4);
             border: 2px solid rgba(255, 200, 0, 0.6);
         }
@@ -318,7 +332,7 @@
 
         #btn-close {
             bottom: 100px;
-            right: 30px;
+            right: 10px;
             background: rgba(231, 76, 60, 0.4);
             border: 2px solid rgba(231, 76, 60, 0.6);
         }
@@ -362,19 +376,14 @@
             pointer-events: none;
         }
         .loading-content {
-            text-align: center;
-            font-family: 'Press Start 2P', cursive;
-            animation: pulse 1.5s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .loading-content h1 {
-            color: #f1c40f;
-            text-shadow: 4px 4px #8b4513;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .loading-content p {
-            font-size: 12px;
-            color: #ecf0f1;
+        #loading-animals-canvas {
+            display: block;
+            image-rendering: pixelated;
+            margin: 20px 0;
         }
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
@@ -383,15 +392,14 @@
         }
 
     </style>
-  <script type="module" crossorigin src="/assets/farm-BgXMmGF-.js"></script>
+  <script type="module" crossorigin src="/assets/farm-B5494jfl.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 <body>
 
     <div id="loading-screen">
         <div class="loading-content">
-            <h1>LOUIS'S DIGITAL GARDEN</h1>
-            <p>Cultivating Code & Ideas...</p>
+            <canvas id="loading-animals-canvas" width="320" height="120"></canvas>
         </div>
     </div>
 
@@ -405,6 +413,7 @@
         <div id="interaction-prompt">Press SPACE to Interact</div>
 
         <div id="mobile-controls">
+            <div id="mobile-interaction-prompt">Tap 'A' to Interact</div>
             <div class="joystick-container" id="joystick">
                 <div class="joystick-knob" id="joystick-knob"></div>
             </div>
@@ -422,44 +431,5 @@
         </div>
     </div>
 
-    <script>
-        // Dynamically adjust control button positions to avoid browser address bar/menu bar
-        function updateControlsPosition() {
-            if (!window.visualViewport) return;
-            
-            const viewport = window.visualViewport;
-            const windowHeight = window.innerHeight;
-            const viewportHeight = viewport.height;
-            
-            // Calculate browser UI height (address bar + menu bar)
-            const browserUIHeight = windowHeight - viewportHeight;
-            
-            // Base spacing 20px + browser UI height + safe-area
-            const safeAreaBottom = parseInt(getComputedStyle(document.documentElement)
-                .getPropertyValue('env(safe-area-inset-bottom, 0px)')) || 0;
-            const bottomOffset = Math.max(20, browserUIHeight + safeAreaBottom + 10);
-            
-            document.documentElement.style.setProperty(
-                '--controls-bottom-offset', 
-                bottomOffset + 'px'
-            );
-        }
-        
-        // Listen for viewport changes (triggered when address bar shows/hides)
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', updateControlsPosition);
-            window.visualViewport.addEventListener('scroll', updateControlsPosition);
-        }
-        
-        // Also update on page load and orientation change
-        window.addEventListener('load', updateControlsPosition);
-        window.addEventListener('resize', updateControlsPosition);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(updateControlsPosition, 100);
-        });
-        
-        // Execute immediately once
-        updateControlsPosition();
-    </script>
 </body>
 </html>
