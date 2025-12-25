@@ -247,14 +247,13 @@
         #mobile-controls {
             display: none; /* Shown via JS on touch devices */
             position: fixed;
-            bottom: 0;
+            bottom: env(safe-area-inset-bottom, 0px);
             left: 0;
             right: 0;
             width: 100%;
-            height: auto;
+            height: 200px;
             pointer-events: none;
-            padding: 20px 20px;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            padding: 20px;
             box-sizing: border-box;
             z-index: 200;
         }
@@ -262,7 +261,7 @@
         /* Virtual Joystick */
         .joystick-container {
             position: absolute;
-            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            bottom: 30px;
             left: 20px;
             width: 120px;
             height: 120px;
@@ -291,7 +290,7 @@
         }
 
         .action-btn {
-            position: fixed;
+            position: absolute;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -307,8 +306,7 @@
 
         /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
         #btn-action {
-            position: fixed;
-            bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+            bottom: 60px;
             right: 100px;
             background: rgba(255, 200, 0, 0.4);
             border: 2px solid rgba(255, 200, 0, 0.6);
@@ -316,8 +314,7 @@
         #btn-action:active { background: rgba(255, 200, 0, 0.7); }
 
         #btn-close {
-            position: fixed;
-            bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+            bottom: 100px;
             right: 30px;
             background: rgba(231, 76, 60, 0.4);
             border: 2px solid rgba(231, 76, 60, 0.6);
