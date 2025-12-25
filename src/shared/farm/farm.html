@@ -160,6 +160,7 @@
             pointer-events: none;
             text-align: center;
             white-space: nowrap;
+            z-index: 150;
         }
 
         /* Content Modal */
@@ -247,29 +248,46 @@
         #mobile-controls {
             display: none; /* Shown via JS on touch devices */
             position: fixed;
-            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            bottom: 20px; /* Will be overridden by JS */
             left: 0;
             right: 0;
             width: 100%;
-            height: 150px;
+            height: 180px;
             pointer-events: none;
             padding: 0 20px;
             box-sizing: border-box;
             z-index: 200;
         }
 
+        /* Interaction prompt inside mobile controls - positioned above buttons */
+        #mobile-interaction-prompt {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+            animation: bounce 1s infinite;
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
         /* Virtual Joystick */
         .joystick-container {
-            position: fixed;
-            bottom: calc(40px + env(safe-area-inset-bottom, 0px));
-            left: 20px;
+            position: absolute;
+            bottom: 30px;
+            left: 0;
             width: 120px;
             height: 120px;
             pointer-events: auto;
             background: rgba(255, 255, 255, 0.15);
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            z-index: 201;
         }
 
         .joystick-knob {
@@ -290,7 +308,7 @@
         }
 
         .action-btn {
-            position: fixed;
+            position: absolute;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -301,21 +319,20 @@
             color: white;
             font-size: 12px;
             user-select: none;
-            z-index: 201;
         }
 
         /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
         #btn-action {
-            bottom: calc(50px + env(safe-area-inset-bottom, 0px));
-            right: 100px;
+            bottom: 40px;
+            right: 80px;
             background: rgba(255, 200, 0, 0.4);
             border: 2px solid rgba(255, 200, 0, 0.6);
         }
         #btn-action:active { background: rgba(255, 200, 0, 0.7); }
 
         #btn-close {
-            bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-            right: 30px;
+            bottom: 100px;
+            right: 10px;
             background: rgba(231, 76, 60, 0.4);
             border: 2px solid rgba(231, 76, 60, 0.6);
         }
@@ -400,6 +417,7 @@
         <div id="interaction-prompt">Press SPACE to Interact</div>
 
         <div id="mobile-controls">
+            <div id="mobile-interaction-prompt">Tap 'A' to Interact</div>
             <div class="joystick-container" id="joystick">
                 <div class="joystick-knob" id="joystick-knob"></div>
             </div>

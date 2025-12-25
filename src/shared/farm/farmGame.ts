@@ -546,11 +546,56 @@ const joystickKnob = document.getElementById('joystick-knob')!;
 const btnAction = document.getElementById('btn-action')!;
 const btnClose = document.getElementById('btn-close')!;
 const mobileControls = document.getElementById('mobile-controls')!;
+const mobileInteractionPrompt = document.getElementById('mobile-interaction-prompt')!;
+
+// Function to update mobile controls position based on visual viewport
+// This handles mobile browser UI (address bar, toolbar) that covers fixed elements
+function updateMobileControlsPosition() {
+    if (!window.visualViewport) {
+        // Fallback: just use a reasonable bottom margin
+        mobileControls.style.bottom = '20px';
+        return;
+    }
+    
+    const viewport = window.visualViewport;
+    // The visual viewport gives us the actual visible area
+    // We need to calculate how much of the bottom is hidden by browser UI
+    
+    // window.innerHeight is the layout viewport height (includes hidden areas)
+    // viewport.height is the actual visible height
+    // viewport.offsetTop is how much the visual viewport is scrolled from top
+    
+    // Bottom offset = total layout height - (visual viewport top + visual viewport height)
+    const bottomOffset = window.innerHeight - (viewport.offsetTop + viewport.height);
+    
+    // Set the bottom position directly (add 20px padding)
+    const bottomPosition = Math.max(20, bottomOffset + 100);
+    mobileControls.style.bottom = `${bottomPosition}px`;
+}
 
 // Detect touch device roughly
-if('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+if(isTouchDevice) {
     mobileControls.style.display = 'block';
-    promptEl.innerText = "Tap 'A' to Interact";
+    // Hide desktop prompt and use mobile prompt instead
+    promptEl.style.display = 'none';
+    
+    // Initial position update
+    updateMobileControlsPosition();
+    
+    // Listen for visual viewport changes (resize, scroll, zoom)
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateMobileControlsPosition);
+        window.visualViewport.addEventListener('scroll', updateMobileControlsPosition);
+    }
+    
+    // Also listen for regular resize and orientation changes
+    window.addEventListener('resize', updateMobileControlsPosition);
+    window.addEventListener('orientationchange', () => {
+        // Delay slightly for orientation change to complete
+        setTimeout(updateMobileControlsPosition, 100);
+    });
 }
 
 // Virtual Joystick Logic
@@ -894,9 +939,16 @@ function checkInteraction() {
     gameState.interactionTarget = closest;
 
     if (closest) {
-        promptEl.style.display = 'block';
+        // Show the appropriate prompt based on device type
+        if (isTouchDevice) {
+            mobileInteractionPrompt.style.display = 'block';
+        } else {
+            promptEl.style.display = 'block';
+        }
     } else {
+        // Hide both prompts
         promptEl.style.display = 'none';
+        mobileInteractionPrompt.style.display = 'none';
     }
 }
 
