@@ -17,6 +17,8 @@
             --modal-bg: #fdf1ce;
             --modal-border: #8b4513;
             --text-color: #4a3b2a;
+            /* Dynamic bottom offset - controlled by JS to avoid browser UI */
+            --controls-bottom-offset: 20px;
         }
 
         body, html {
@@ -247,7 +249,7 @@
         #mobile-controls {
             display: none; /* Shown via JS on touch devices */
             position: fixed;
-            bottom: env(safe-area-inset-bottom, 0px);
+            bottom: var(--controls-bottom-offset);
             left: 0;
             right: 0;
             width: 100%;
@@ -256,6 +258,7 @@
             padding: 20px;
             box-sizing: border-box;
             z-index: 200;
+            transition: bottom 0.1s ease-out; /* Smooth transition */
         }
 
         /* Virtual Joystick */
@@ -419,5 +422,44 @@
         </div>
     </div>
 
+    <script>
+        // Dynamically adjust control button positions to avoid browser address bar/menu bar
+        function updateControlsPosition() {
+            if (!window.visualViewport) return;
+            
+            const viewport = window.visualViewport;
+            const windowHeight = window.innerHeight;
+            const viewportHeight = viewport.height;
+            
+            // Calculate browser UI height (address bar + menu bar)
+            const browserUIHeight = windowHeight - viewportHeight;
+            
+            // Base spacing 20px + browser UI height + safe-area
+            const safeAreaBottom = parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('env(safe-area-inset-bottom, 0px)')) || 0;
+            const bottomOffset = Math.max(20, browserUIHeight + safeAreaBottom + 10);
+            
+            document.documentElement.style.setProperty(
+                '--controls-bottom-offset', 
+                bottomOffset + 'px'
+            );
+        }
+        
+        // Listen for viewport changes (triggered when address bar shows/hides)
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', updateControlsPosition);
+            window.visualViewport.addEventListener('scroll', updateControlsPosition);
+        }
+        
+        // Also update on page load and orientation change
+        window.addEventListener('load', updateControlsPosition);
+        window.addEventListener('resize', updateControlsPosition);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateControlsPosition, 100);
+        });
+        
+        // Execute immediately once
+        updateControlsPosition();
+    </script>
 </body>
 </html>
