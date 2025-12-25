@@ -2,15 +2,15 @@ import profileImg from '../../assets/profile.png';
 
 import './About.css';
 import Icon from '../../components/Icon';
-import PageCurl from '../../components/PageCurl';
+import { Avatar } from '../../components/Avatar';
 
 export function About() {
   return (
     <div className="page-about">
       <div className="background"></div>
       <div className="profile-container">
-        <div className="profile-img">
-          <img src={profileImg} alt="profile" />
+        <div className="profile-img-flip">
+          <Avatar imageSrc={profileImg} alt="profile" targetPath="/farm" />
         </div>
 
         <svg
@@ -59,7 +59,6 @@ export function About() {
 
         </div>
       </div>
-      <PageCurl />
     </div>
   );
 }
