@@ -11,6 +11,8 @@ export const SHOW_SETTINGS_UI = true; // Set to false to hide the menu completel
  */
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
+const loadingAnimalsCanvas = document.getElementById('loading-animals-canvas') as HTMLCanvasElement;
+const loadingCtx = loadingAnimalsCanvas.getContext('2d')!;
 const promptEl = document.getElementById('interaction-prompt')!;
 const modalOverlay = document.getElementById('modal-overlay')!;
 const modalBody = document.getElementById('modal-body')!;
@@ -734,11 +736,244 @@ async function fetchBlogs() {
     }
 }
 
+/**
+ * LOADING SCREEN ANIMALS
+ */
+interface LoadingAnimal {
+    type: string;
+    x: number;
+    baseY: number;
+    y: number;
+    direction: 'left' | 'right';
+    frame: number;
+    bounceOffset: number;
+}
+
+const loadingAnimals: LoadingAnimal[] = [
+    { type: 'cow', x: 50, baseY: 60, y: 60, direction: 'right', frame: 0, bounceOffset: 0 },
+    { type: 'chicken', x: 110, baseY: 60, y: 60, direction: 'right', frame: 0, bounceOffset: Math.PI / 2 },
+    { type: 'horse', x: 180, baseY: 60, y: 60, direction: 'right', frame: 0, bounceOffset: Math.PI },
+    { type: 'sheep', x: 250, baseY: 60, y: 60, direction: 'right', frame: 0, bounceOffset: Math.PI * 1.5 }
+];
+
+function drawLoadingAnimal(ctx: CanvasRenderingContext2D, animal: LoadingAnimal) {
+    const x = animal.x;
+    const y = animal.y;
+    const colors = ANIMAL_COLORS[animal.type];
+    const frameOffset = Math.floor(animal.frame) === 1 ? 2 : 0;
+
+    ctx.save();
+
+    // Flip if facing left
+    if (animal.direction === 'left') {
+        ctx.translate(x, y);
+        ctx.scale(-1, 1);
+        ctx.translate(-x, -y);
+    }
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 4, 10, 5, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    if (animal.type === 'cow') {
+        // Body
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 14, y - 20, 28, 20);
+
+        // Spots
+        ctx.fillStyle = colors.spots;
+        ctx.fillRect(x - 8, y - 18, 10, 8);
+        ctx.fillRect(x + 6, y - 14, 6, 6);
+
+        // Head
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 18, y - 26, 16, 16);
+
+        // Horns
+        ctx.fillStyle = '#d7ccc8';
+        ctx.fillRect(x - 18, y - 28, 4, 4);
+        ctx.fillRect(x - 6, y - 28, 4, 4);
+
+        // Ears
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 20, y - 22, 2, 4);
+        ctx.fillRect(x - 2, y - 22, 2, 4);
+
+        // Snout
+        ctx.fillStyle = colors.snout;
+        ctx.fillRect(x - 18, y - 14, 16, 6);
+
+        // Eyes
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x - 16, y - 20, 2, 2);
+        ctx.fillRect(x - 8, y - 20, 2, 2);
+
+        // Legs
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 12, y, 6, 6 + frameOffset);
+        ctx.fillRect(x + 6, y, 6, 6 - frameOffset);
+
+        // Tail
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x + 14, y - 18, 2, 10);
+        ctx.fillStyle = colors.spots;
+        ctx.fillRect(x + 13, y - 8, 4, 4);
+
+    } else if (animal.type === 'chicken') {
+        // Body
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 6, y - 10, 12, 10);
+
+        // Tail feathers
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 8, y - 12, 4, 6);
+
+        // Wing
+        ctx.fillStyle = '#e0e0e0';
+        ctx.fillRect(x - 2, y - 8, 6, 4);
+
+        // Head
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x + 2, y - 14, 6, 6);
+
+        // Comb
+        ctx.fillStyle = colors.comb;
+        ctx.fillRect(x + 3, y - 15, 4, 2);
+
+        // Beak
+        ctx.fillStyle = colors.beak;
+        ctx.fillRect(x + 8, y - 11, 2, 2);
+
+        // Eye
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x + 4, y - 13, 2, 1);
+
+        // Legs
+        ctx.fillStyle = '#8b6f47';
+        ctx.fillRect(x - 2, y, 2, 2 + frameOffset);
+        ctx.fillRect(x + 4, y, 2, 2 - frameOffset);
+
+    } else if (animal.type === 'horse') {
+        // Body
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 12, y - 18, 24, 18);
+
+        // Head
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 16, y - 24, 12, 12);
+
+        // Mane
+        ctx.fillStyle = colors.mane;
+        ctx.fillRect(x - 14, y - 26, 2, 4);
+        ctx.fillRect(x - 10, y - 26, 2, 4);
+
+        // Snout
+        ctx.fillStyle = colors.snout;
+        ctx.fillRect(x - 18, y - 20, 4, 4);
+
+        // Eyes
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x - 12, y - 22, 2, 2);
+
+        // Tail
+        ctx.fillStyle = colors.mane;
+        ctx.fillRect(x + 12, y - 10, 2, 10);
+
+        // Legs
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 8, y, 4, 5 + frameOffset);
+        ctx.fillRect(x + 4, y, 4, 5 - frameOffset);
+
+    } else if (animal.type === 'sheep') {
+        // Body (fluffy)
+        ctx.fillStyle = colors.body;
+        ctx.fillRect(x - 12, y - 16, 24, 14);
+        ctx.fillRect(x - 14, y - 12, 28, 6); // Fluffy sides
+
+        // Head
+        ctx.fillStyle = colors.head;
+        ctx.fillRect(x - 8, y - 20, 16, 10);
+
+        // Eyes
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x - 4, y - 18, 2, 2);
+        ctx.fillRect(x + 4, y - 18, 2, 2);
+
+        // Ears
+        ctx.fillStyle = colors.head;
+        ctx.fillRect(x - 10, y - 22, 2, 3);
+        ctx.fillRect(x + 8, y - 22, 2, 3);
+
+        // Legs
+        ctx.fillStyle = colors.legs;
+        ctx.fillRect(x - 8, y, 3, 5 + frameOffset);
+        ctx.fillRect(x - 2, y, 3, 5 - frameOffset);
+        ctx.fillRect(x + 4, y, 3, 5 + frameOffset);
+    }
+
+    ctx.restore();
+}
+
+function animateLoadingAnimals(deltaTime: number) {
+    loadingAnimals.forEach(animal => {
+        // Bounce offset increases over time
+        animal.bounceOffset += deltaTime * 0.005;
+        
+        // Create vertical bounce (up and down movement)
+        const bounce = Math.sin(animal.bounceOffset) * 3;
+        animal.y = animal.baseY + bounce;
+
+        // Animate walking frames based on bounce
+        animal.frame = (animal.frame + deltaTime * 0.01) % 2;
+    });
+}
+
+function drawLoadingScreen() {
+    // Clear canvas
+    loadingCtx.fillStyle = '#2c3e50';
+    loadingCtx.fillRect(0, 0, loadingAnimalsCanvas.width, loadingAnimalsCanvas.height);
+
+    // Draw animals
+    loadingAnimals.forEach(animal => {
+        drawLoadingAnimal(loadingCtx, animal);
+    });
+}
+
+let loadingAnimationId: number | null = null;
+let lastLoadingTime = Date.now();
+
+function startLoadingAnimation() {
+    function tick() {
+        const now = Date.now();
+        const deltaTime = now - lastLoadingTime;
+        lastLoadingTime = now;
+
+        animateLoadingAnimals(deltaTime);
+        drawLoadingScreen();
+
+        loadingAnimationId = requestAnimationFrame(tick);
+    }
+
+    tick();
+}
+
+function stopLoadingAnimation() {
+    if (loadingAnimationId !== null) {
+        cancelAnimationFrame(loadingAnimationId);
+        loadingAnimationId = null;
+    }
+}
+
 async function init() {
     resize();
     window.addEventListener('resize', resize);
 
     initScenery();
+
+    // Start loading animation
+    startLoadingAnimation();
 
     // Wait for resources (Font, Blogs) with a timeout
     // We want to show the loading screen for at least 2s (minLoadTime)
@@ -756,6 +991,9 @@ async function init() {
         minLoadTime,
         Promise.race([resourcesLoaded, maxLoadTime])
     ]);
+
+    // Stop loading animation
+    stopLoadingAnimation();
 
     // Start player in front of the new house location
     gameState.player.x = 0;

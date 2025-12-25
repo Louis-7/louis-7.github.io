@@ -376,19 +376,14 @@
             pointer-events: none;
         }
         .loading-content {
-            text-align: center;
-            font-family: 'Press Start 2P', cursive;
-            animation: pulse 1.5s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .loading-content h1 {
-            color: #f1c40f;
-            text-shadow: 4px 4px #8b4513;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .loading-content p {
-            font-size: 12px;
-            color: #ecf0f1;
+        #loading-animals-canvas {
+            display: block;
+            image-rendering: pixelated;
+            margin: 20px 0;
         }
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
@@ -402,8 +397,7 @@
 
     <div id="loading-screen">
         <div class="loading-content">
-            <h1>LOUIS'S DIGITAL GARDEN</h1>
-            <p>Cultivating Code & Ideas...</p>
+            <canvas id="loading-animals-canvas" width="320" height="120"></canvas>
         </div>
     </div>
 
