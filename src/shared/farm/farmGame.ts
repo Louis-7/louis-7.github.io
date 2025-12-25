@@ -956,6 +956,9 @@ function openModal(content: string) {
     gameState.isModalOpen = true;
     modalBody.innerHTML = content;
     modalOverlay.style.display = 'flex';
+    // Hide interaction prompts when modal opens
+    promptEl.style.display = 'none';
+    mobileInteractionPrompt.style.display = 'none';
     // Reset keys so player doesn't keep walking
     Object.keys(gameState.keys).forEach(k => gameState.keys[k] = false);
 }
