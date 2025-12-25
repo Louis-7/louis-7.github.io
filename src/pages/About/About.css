@@ -150,6 +150,54 @@
   } */
 }
 
+/* On mobile device */
+@media (max-width: 768px) {
+  .page-about {
+    .profile-container {
+      width: 100%;
+      height: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .profile-img {
+        position: static;
+        margin-bottom: 20px;
+      }
+
+      .dash-line {
+        display: none;
+      }
+
+      .my-name {
+        position: static;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .self-intro {
+        position: static;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .links {
+        position: static;
+        justify-content: center;
+      }
+
+      .click-me {
+        position: static;
+        justify-content: center;
+      }
+    }
+  }
+}
+
 /* .self-intro {
   text-wrap: pretty;
 }
