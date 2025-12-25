@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Louis's Digital Garden</title>
     <style>
         @font-face {
@@ -23,7 +23,7 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100dvh;
+            height: 100%;
             overflow: hidden;
             background-color: var(--bg-color);
             font-family: 'Press Start 2P', cursive;
@@ -247,17 +247,22 @@
         #mobile-controls {
             display: none; /* Shown via JS on touch devices */
             position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             width: 100%;
-            height: 200px;
+            height: auto;
             pointer-events: none;
-            padding: 0 20px;
+            padding: 20px 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             box-sizing: border-box;
             z-index: 200;
         }
 
         /* Virtual Joystick */
         .joystick-container {
-            position: fixed;
+            position: absolute;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             left: 20px;
             width: 120px;
             height: 120px;
@@ -302,12 +307,18 @@
 
         /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
         #btn-action {
+            position: fixed;
+            bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+            right: 100px;
             background: rgba(255, 200, 0, 0.4);
             border: 2px solid rgba(255, 200, 0, 0.6);
         }
         #btn-action:active { background: rgba(255, 200, 0, 0.7); }
 
         #btn-close {
+            position: fixed;
+            bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+            right: 30px;
             background: rgba(231, 76, 60, 0.4);
             border: 2px solid rgba(231, 76, 60, 0.6);
         }
@@ -372,7 +383,7 @@
         }
 
     </style>
-  <script type="module" crossorigin src="/assets/farm-ClpaKCB1.js"></script>
+  <script type="module" crossorigin src="/assets/farm-BgXMmGF-.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 <body>
