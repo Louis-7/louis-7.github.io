@@ -143,48 +143,48 @@ export function Avatar({ imageSrc, alt = 'avatar', targetPath = '/farm' }: Avata
             <g>
               <animateTransform attributeName="transform" type="translate" values="0,0;2,0;0,0;-1,0;0,0" dur="1.5s" repeatCount="indefinite" />
               {/* Body */}
-              <rect x="22" y="162" width="10" height="8" fill="#ffffff" />
-              <rect x="20" y="164" width="3" height="4" fill="#ffffff" />
+              <rect x="42" y="162" width="10" height="8" fill="#ffffff" />
+              <rect x="40" y="164" width="3" height="4" fill="#ffffff" />
               {/* Head */}
-              <rect x="24" y="158" width="6" height="5" fill="#ffffff" />
+              <rect x="44" y="158" width="6" height="5" fill="#ffffff" />
               {/* Comb */}
-              <rect x="26" y="156" width="2" height="3" fill="#e53935" />
-              <rect x="28" y="157" width="2" height="2" fill="#e53935" />
+              <rect x="46" y="156" width="2" height="3" fill="#e53935" />
+              <rect x="48" y="157" width="2" height="2" fill="#e53935" />
               {/* Beak */}
-              <rect x="30" y="160" width="3" height="2" fill="#ff9800" />
+              <rect x="50" y="160" width="3" height="2" fill="#ff9800" />
               {/* Eye */}
-              <rect x="28" y="159" width="2" height="2" fill="#212121" />
+              <rect x="48" y="159" width="2" height="2" fill="#212121" />
               {/* Tail feathers */}
-              <rect x="18" y="160" width="3" height="2" fill="#e0e0e0" />
-              <rect x="17" y="162" width="3" height="2" fill="#bdbdbd" />
+              <rect x="38" y="160" width="3" height="2" fill="#e0e0e0" />
+              <rect x="37" y="162" width="3" height="2" fill="#bdbdbd" />
               {/* Legs */}
-              <rect x="24" y="170" width="2" height="3" fill="#ff9800" />
-              <rect x="28" y="170" width="2" height="3" fill="#ff9800" />
+              <rect x="44" y="170" width="2" height="3" fill="#ff9800" />
+              <rect x="48" y="170" width="2" height="3" fill="#ff9800" />
             </g>
             
             {/* Pixel pig - cute pink */}
             <g>
               <animateTransform attributeName="transform" type="translate" values="0,0;-1,0;0,0;1,0;0,0" dur="1.8s" repeatCount="indefinite" />
               {/* Body */}
-              <rect x="160" y="164" width="12" height="8" fill="#ffb6c1" />
+              <rect x="138" y="164" width="12" height="8" fill="#ffb6c1" />
               {/* Head */}
-              <rect x="170" y="160" width="8" height="8" fill="#ffb6c1" />
+              <rect x="148" y="160" width="8" height="8" fill="#ffb6c1" />
               {/* Ears */}
-              <rect x="172" y="158" width="3" height="3" fill="#ff99aa" />
-              <rect x="176" y="158" width="3" height="3" fill="#ff99aa" />
+              <rect x="150" y="158" width="3" height="3" fill="#ff99aa" />
+              <rect x="154" y="158" width="3" height="3" fill="#ff99aa" />
               {/* Snout */}
-              <rect x="177" y="164" width="4" height="3" fill="#ff8a9b" />
-              <rect x="178" y="165" width="1" height="1" fill="#c2185b" />
-              <rect x="180" y="165" width="1" height="1" fill="#c2185b" />
+              <rect x="155" y="164" width="4" height="3" fill="#ff8a9b" />
+              <rect x="156" y="165" width="1" height="1" fill="#c2185b" />
+              <rect x="158" y="165" width="1" height="1" fill="#c2185b" />
               {/* Eye */}
-              <rect x="174" y="162" width="2" height="2" fill="#212121" />
+              <rect x="152" y="162" width="2" height="2" fill="#212121" />
               {/* Tail - curly */}
-              <rect x="158" y="166" width="2" height="2" fill="#ff99aa" />
-              <rect x="156" y="164" width="2" height="2" fill="#ff99aa" />
-              <rect x="157" y="162" width="2" height="2" fill="#ff99aa" />
+              <rect x="136" y="166" width="2" height="2" fill="#ff99aa" />
+              <rect x="134" y="164" width="2" height="2" fill="#ff99aa" />
+              <rect x="135" y="162" width="2" height="2" fill="#ff99aa" />
               {/* Legs */}
-              <rect x="162" y="172" width="3" height="2" fill="#ffb6c1" />
-              <rect x="167" y="172" width="3" height="2" fill="#ffb6c1" />
+              <rect x="140" y="172" width="3" height="2" fill="#ffb6c1" />
+              <rect x="145" y="172" width="3" height="2" fill="#ffb6c1" />
             </g>
             
             {/* Fireflies */}
