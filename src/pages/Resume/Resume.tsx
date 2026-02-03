@@ -47,7 +47,7 @@ export function Resume() {
       {
         duration: 'Jun, 2025 - present',
         name: 'SnapMind',
-        description: 'SnapMind is a cross-platform desktop AI assistant that lets you instantly interact with LLMs from anywhere in your system.',
+        description: '[SnapMind](https://github.com/Snap-Mind/snap-mind) is a cross-platform desktop AI assistant that lets you instantly interact with LLMs from anywhere in your system.',
         techStack: 'Electron, TypeScript, React (Hooks), Node.js, LLM APIs (OpenAI, Anthropic, Google, Qwen, etc.)',
         highlights: [
           'Responsible for the entire product development cycle: architecture design, front-end and back-end development, CI/CD workflow',
