@@ -1,435 +1,458 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Louis's Digital Garden</title>
     <style>
-        @font-face {
-            font-family: 'Press Start 2P';
-            src: url('/assets/PressStart2P-Regular-DogiNJoF.ttf') format('truetype');
-            font-weight: 400;
-            font-style: normal;
-        }
+      @font-face {
+        font-family: 'Press Start 2P';
+        src: url('/assets/PressStart2P-Regular-DogiNJoF.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+      }
 
-        :root {
-            --bg-color: #2c3e50;
-            --modal-bg: #fdf1ce;
-            --modal-border: #8b4513;
-            --text-color: #4a3b2a;
-        }
+      :root {
+        --bg-color: #2c3e50;
+        --modal-bg: #fdf1ce;
+        --modal-border: #8b4513;
+        --text-color: #4a3b2a;
+      }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-color);
-            font-family: 'Press Start 2P', cursive;
-            touch-action: none; /* Prevent pull-to-refresh on mobile */
-        }
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: var(--bg-color);
+        font-family: 'Press Start 2P', cursive;
+        touch-action: none; /* Prevent pull-to-refresh on mobile */
+      }
 
-        #gameCanvas {
-            display: block;
-            image-rendering: pixelated; /* Crucial for the retro look */
-            cursor: crosshair;
-        }
+      #gameCanvas {
+        display: block;
+        image-rendering: pixelated; /* Crucial for the retro look */
+        cursor: crosshair;
+      }
 
-        /* UI Overlay for Interactions */
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+      /* UI Overlay for Interactions */
+      #ui-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
 
-        /* --- SETTINGS MENU STYLES --- */
-        #settings-panel {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 220px; /* Slightly wider for new tools */
-            background-color: rgba(255, 255, 255, 0.95);
-            border: 3px solid #000;
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.4);
-            pointer-events: auto;
-            font-family: 'Press Start 2P', cursive;
-            display: flex; /* Controlled by JS flag */
-            flex-direction: column;
-        }
+      /* --- SETTINGS MENU STYLES --- */
+      #settings-panel {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 220px; /* Slightly wider for new tools */
+        background-color: rgba(255, 255, 255, 0.95);
+        border: 3px solid #000;
+        box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.4);
+        pointer-events: auto;
+        font-family: 'Press Start 2P', cursive;
+        display: flex; /* Controlled by JS flag */
+        flex-direction: column;
+      }
 
-        .panel-header {
-            background-color: #2c3e50;
-            color: #fff;
-            padding: 8px;
-            font-size: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
+      .panel-header {
+        background-color: #2c3e50;
+        color: #fff;
+        padding: 8px;
+        font-size: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
 
-        .panel-body {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+      .panel-body {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
 
-        .control-label {
-            font-size: 8px;
-            color: #555;
-            text-transform: uppercase;
-        }
+      .control-label {
+        font-size: 8px;
+        color: #555;
+        text-transform: uppercase;
+      }
 
-        /* Pixel Art Buttons */
-        .pixel-btn {
-            background: #fff;
-            border: 2px solid #4a3b2a;
-            padding: 8px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            color: #4a3b2a;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: 2px 2px 0px #8b4513;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
+      /* Pixel Art Buttons */
+      .pixel-btn {
+        background: #fff;
+        border: 2px solid #4a3b2a;
+        padding: 8px;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 10px;
+        color: #4a3b2a;
+        cursor: pointer;
+        text-align: center;
+        box-shadow: 2px 2px 0px #8b4513;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
 
-        .pixel-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0 0 0;
-        }
+      .pixel-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0;
+      }
 
-        .pixel-btn.active {
-            background-color: #f1c40f;
-            border-color: #b78e0c;
-        }
+      .pixel-btn.active {
+        background-color: #f1c40f;
+        border-color: #b78e0c;
+      }
 
-        /* Editor Tools Grid */
-        #editor-tools {
-            display: none; /* Hidden by default */
-            grid-template-columns: repeat(5, 1fr); /* Increased columns */
-            gap: 5px;
-            margin-top: 5px;
-        }
+      /* Editor Tools Grid */
+      #editor-tools {
+        display: none; /* Hidden by default */
+        grid-template-columns: repeat(5, 1fr); /* Increased columns */
+        gap: 5px;
+        margin-top: 5px;
+      }
 
-        .tool-btn {
-            padding: 5px;
-            font-size: 14px;
-            text-align: center;
-            background: #eee;
-            border: 2px solid #ccc;
-            cursor: pointer;
-        }
-        .tool-btn.active {
-            background: #f1c40f;
-            border-color: #000;
-        }
+      .tool-btn {
+        padding: 5px;
+        font-size: 14px;
+        text-align: center;
+        background: #eee;
+        border: 2px solid #ccc;
+        cursor: pointer;
+      }
+      .tool-btn.active {
+        background: #f1c40f;
+        border-color: #000;
+      }
 
-        /* Minimize logic */
-        #settings-panel.minimized .panel-body {
-            display: none;
-        }
+      /* Minimize logic */
+      #settings-panel.minimized .panel-body {
+        display: none;
+      }
 
-        /* Interaction Prompt (e.g. "Press Space") */
-        #interaction-prompt {
-            position: absolute;
-            bottom: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 12px;
-            display: none;
-            animation: bounce 1s infinite;
-            pointer-events: none;
-            text-align: center;
-            white-space: nowrap;
-            z-index: 150;
-        }
+      /* Interaction Prompt (e.g. "Press Space") */
+      #interaction-prompt {
+        position: absolute;
+        bottom: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 12px;
+        display: none;
+        animation: bounce 1s infinite;
+        pointer-events: none;
+        text-align: center;
+        white-space: nowrap;
+        z-index: 150;
+      }
 
-        /* Content Modal */
-        #modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            pointer-events: auto;
-            z-index: 100;
-        }
+      /* Content Modal */
+      #modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        pointer-events: auto;
+        z-index: 100;
+      }
 
+      #modal-content {
+        width: 80%;
+        max-width: 600px;
+        max-height: 60vh;
+        background-color: var(--modal-bg);
+        border: 4px solid var(--modal-border);
+        box-shadow:
+          0 0 0 4px #d4a373,
+          0 10px 20px rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        padding: 20px;
+        overflow-y: auto;
+        position: relative;
+        color: var(--text-color);
+        line-height: 1.6;
+        font-family: 'Courier New', Courier, monospace; /* Easier to read for long text */
+        font-weight: bold;
+        margin-bottom: calc(180px + env(safe-area-inset-bottom, 0px));
+      }
+
+      @media (min-width: 768px) {
         #modal-content {
-            width: 80%;
-            max-width: 600px;
-            max-height: 60vh;
-            background-color: var(--modal-bg);
-            border: 4px solid var(--modal-border);
-            box-shadow: 0 0 0 4px #d4a373, 0 10px 20px rgba(0,0,0,0.5);
-            border-radius: 4px;
-            padding: 20px;
-            overflow-y: auto;
-            position: relative;
-            color: var(--text-color);
-            line-height: 1.6;
-            font-family: 'Courier New', Courier, monospace; /* Easier to read for long text */
-            font-weight: bold;
-            margin-bottom: calc(180px + env(safe-area-inset-bottom, 0px));
+          max-height: 80%;
+          margin-bottom: 0;
         }
+      }
 
-        @media (min-width: 768px) {
-            #modal-content {
-                max-height: 80%;
-                margin-bottom: 0;
-            }
-        }
+      #modal-content h2 {
+        font-family: 'Press Start 2P', cursive;
+        color: #d35400;
+        border-bottom: 2px dashed #8b4513;
+        padding-bottom: 10px;
+        margin-top: 0;
+        font-size: 18px;
+      }
 
-        #modal-content h2 {
-            font-family: 'Press Start 2P', cursive;
-            color: #d35400;
-            border-bottom: 2px dashed #8b4513;
-            padding-bottom: 10px;
-            margin-top: 0;
-            font-size: 18px;
-        }
+      #modal-content h3 {
+        font-size: 16px;
+        color: #8b4513;
+        margin-bottom: 5px;
+      }
 
-        #modal-content h3 {
-            font-size: 16px;
-            color: #8b4513;
-            margin-bottom: 5px;
-        }
+      #modal-content p,
+      #modal-content ul {
+        font-size: 14px;
+      }
 
-        #modal-content p, #modal-content ul {
-            font-size: 14px;
-        }
+      #close-area {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
 
-        #close-area {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
+      #close-btn {
+        background: #e74c3c;
+        border: 2px solid #c0392b;
+        color: white;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        line-height: 26px;
+        cursor: pointer;
+        font-family: 'Press Start 2P', cursive;
+      }
 
-        #close-btn {
-            background: #e74c3c;
-            border: 2px solid #c0392b;
-            color: white;
-            width: 30px;
-            height: 30px;
-            text-align: center;
-            line-height: 26px;
-            cursor: pointer;
-            font-family: 'Press Start 2P', cursive;
-        }
+      #close-btn:hover {
+        background: #c0392b;
+      }
 
-        #close-btn:hover {
-            background: #c0392b;
-        }
+      /* Touch Controls */
+      #mobile-controls {
+        display: none; /* Shown via JS on touch devices */
+        position: fixed;
+        bottom: 20px; /* Will be overridden by JS */
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 180px;
+        pointer-events: none;
+        padding: 0 20px;
+        box-sizing: border-box;
+        z-index: 200;
+      }
 
-        /* Touch Controls */
-        #mobile-controls {
-            display: none; /* Shown via JS on touch devices */
-            position: fixed;
-            bottom: 20px; /* Will be overridden by JS */
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 180px;
-            pointer-events: none;
-            padding: 0 20px;
-            box-sizing: border-box;
-            z-index: 200;
-        }
+      /* Interaction prompt inside mobile controls - positioned above buttons */
+      #mobile-interaction-prompt {
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 12px;
+        display: none;
+        animation: bounce 1s infinite;
+        pointer-events: none;
+        text-align: center;
+        white-space: nowrap;
+      }
 
-        /* Interaction prompt inside mobile controls - positioned above buttons */
-        #mobile-interaction-prompt {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 12px;
-            display: none;
-            animation: bounce 1s infinite;
-            pointer-events: none;
-            text-align: center;
-            white-space: nowrap;
-        }
+      /* Virtual Joystick */
+      .joystick-container {
+        position: absolute;
+        bottom: 30px;
+        left: 0;
+        width: 120px;
+        height: 120px;
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+      }
 
-        /* Virtual Joystick */
-        .joystick-container {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            width: 120px;
-            height: 120px;
-            pointer-events: auto;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-        }
+      .joystick-knob {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: none;
+      }
 
-        .joystick-knob {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.5);
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: none;
-        }
+      .joystick-knob:active {
+        background: rgba(255, 255, 255, 0.7);
+      }
 
-        .joystick-knob:active {
-            background: rgba(255, 255, 255, 0.7);
-        }
+      .action-btn {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        pointer-events: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 12px;
+        user-select: none;
+      }
 
-        .action-btn {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            pointer-events: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 12px;
-            user-select: none;
-        }
+      /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
+      #btn-action {
+        bottom: 40px;
+        right: 80px;
+        background: rgba(255, 200, 0, 0.4);
+        border: 2px solid rgba(255, 200, 0, 0.6);
+      }
+      #btn-action:active {
+        background: rgba(255, 200, 0, 0.7);
+      }
 
-        /* Game Boy style diagonal layout: B is top-right, A is bottom-left */
-        #btn-action {
-            bottom: 40px;
-            right: 80px;
-            background: rgba(255, 200, 0, 0.4);
-            border: 2px solid rgba(255, 200, 0, 0.6);
-        }
-        #btn-action:active { background: rgba(255, 200, 0, 0.7); }
+      #btn-close {
+        bottom: 100px;
+        right: 10px;
+        background: rgba(231, 76, 60, 0.4);
+        border: 2px solid rgba(231, 76, 60, 0.6);
+      }
+      #btn-close:active {
+        background: rgba(231, 76, 60, 0.7);
+      }
 
-        #btn-close {
-            bottom: 100px;
-            right: 10px;
-            background: rgba(231, 76, 60, 0.4);
-            border: 2px solid rgba(231, 76, 60, 0.6);
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translate(-50%, 0);
         }
-        #btn-close:active { background: rgba(231, 76, 60, 0.7); }
+        50% {
+          transform: translate(-50%, -5px);
+        }
+      }
 
-        @keyframes bounce {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -5px); }
-        }
+      /* Scrollbar styling for modal */
+      #modal-content::-webkit-scrollbar {
+        width: 10px;
+      }
+      #modal-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+      #modal-content::-webkit-scrollbar-thumb {
+        background: #8b4513;
+        border-radius: 4px;
+      }
 
-        /* Scrollbar styling for modal */
-        #modal-content::-webkit-scrollbar {
-            width: 10px;
+      /* Loading Screen */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 1s ease-out;
+      }
+      #loading-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loading-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #loading-animals-canvas {
+        display: block;
+        image-rendering: pixelated;
+        margin: 20px 0;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
         }
-        #modal-content::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+        50% {
+          transform: scale(1.05);
+          opacity: 0.8;
         }
-        #modal-content::-webkit-scrollbar-thumb {
-            background: #8b4513;
-            border-radius: 4px;
+        100% {
+          transform: scale(1);
+          opacity: 1;
         }
-
-        /* Loading Screen */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 1s ease-out;
-        }
-        #loading-screen.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .loading-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #loading-animals-canvas {
-            display: block;
-            image-rendering: pixelated;
-            margin: 20px 0;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
+      }
     </style>
-  <script type="module" crossorigin src="/assets/farm-PYvf6B0R.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-</head>
-<body>
-
+    <script type="module" crossorigin src="/assets/farm-PYvf6B0R.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  </head>
+  <body>
     <div id="loading-screen">
-        <div class="loading-content">
-            <canvas id="loading-animals-canvas" width="320" height="120"></canvas>
-        </div>
+      <div class="loading-content">
+        <canvas id="loading-animals-canvas" width="320" height="120"></canvas>
+      </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui-layer">
+      <!-- NEW SETTINGS MENU (Replaces old Season/Editor UI) -->
 
-        <!-- NEW SETTINGS MENU (Replaces old Season/Editor UI) -->
+      <div id="interaction-prompt">Press SPACE to Interact</div>
 
-
-        <div id="interaction-prompt">Press SPACE to Interact</div>
-
-        <div id="mobile-controls">
-            <div id="mobile-interaction-prompt">Tap 'A' to Interact</div>
-            <div class="joystick-container" id="joystick">
-                <div class="joystick-knob" id="joystick-knob"></div>
-            </div>
-            <div class="action-btn" id="btn-close">B</div>
-            <div class="action-btn" id="btn-action">A</div>
+      <div id="mobile-controls">
+        <div id="mobile-interaction-prompt">Tap 'A' to Interact</div>
+        <div class="joystick-container" id="joystick">
+          <div class="joystick-knob" id="joystick-knob"></div>
         </div>
+        <div class="action-btn" id="btn-close">B</div>
+        <div class="action-btn" id="btn-action">A</div>
+      </div>
     </div>
 
     <div id="modal-overlay">
-        <div id="modal-content">
-            <div id="close-area">
-                <div id="close-btn">X</div>
-            </div>
-            <div id="modal-body"></div>
+      <div id="modal-content">
+        <div id="close-area">
+          <div id="close-btn">X</div>
         </div>
+        <div id="modal-body"></div>
+      </div>
     </div>
 
-</body>
+  </body>
 </html>
