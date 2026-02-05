@@ -4,7 +4,7 @@ import './Resume.css';
 // Parse markdown-style links [text](url) into JSX anchor elements
 function parseMarkdownLinks(text: string) {
   if (!text) return text;
-  
+
   return text.split(/(\[.*?\]\(.*?\))/).map((part, idx) => {
     const match = part.match(/\[(.*?)\]\((.*?)\)/);
     if (match) {
@@ -31,15 +31,18 @@ export function Resume() {
     recentFocus: [
       {
         title: 'AI/ML Product Development',
-        description: 'Building production-ready AI applications with multi LLM integration, cross-platform desktop deployment, and modern React/TypeScript architecture',
+        description:
+          'Building production-ready AI applications with multi LLM integration, cross-platform desktop deployment, and modern React/TypeScript architecture',
       },
       {
         title: '10+ Years Full-Stack Expertise',
-        description: 'Specializing in TypeScript, React ecosystem, and scalable cloud-based applications with proven track record in enterprise and startup environments',
+        description:
+          'Specializing in TypeScript, React ecosystem, and scalable cloud-based applications with proven track record in enterprise and startup environments',
       },
       {
         title: 'Cross-Platform Architecture',
-        description: 'Deep experience in Electron desktop apps, React Native mobile development, and responsive web applications with modern UI/UX practices',
+        description:
+          'Deep experience in Electron desktop apps, React Native mobile development, and responsive web applications with modern UI/UX practices',
       },
     ],
 
@@ -47,8 +50,10 @@ export function Resume() {
       {
         duration: 'Jun, 2025 - present',
         name: 'SnapMind',
-        description: '[SnapMind](https://github.com/Snap-Mind/snap-mind) is a cross-platform desktop AI assistant that lets you instantly interact with LLMs from anywhere in your system.',
-        techStack: 'Electron, TypeScript, React (Hooks), Node.js, LLM APIs (OpenAI, Anthropic, Google, Qwen, etc.)',
+        description:
+          '[SnapMind](https://github.com/Snap-Mind/snap-mind) is a cross-platform desktop AI assistant that lets you instantly interact with LLMs from anywhere in your system.',
+        techStack:
+          'Electron, TypeScript, React (Hooks), Node.js, LLM APIs (OpenAI, Anthropic, Google, Qwen, etc.)',
         highlights: [
           'Responsible for the entire product development cycle: architecture design, front-end and back-end development, CI/CD workflow',
           'Implemented multi-LLM provider integration with intelligent context management for AI-powered features (translation, rewriting, summarization, brainstorming)',
@@ -59,8 +64,10 @@ export function Resume() {
       {
         duration: 'Jun, 2020 - present',
         name: 'Cytobank',
-        description: 'Cytobank is a cloud-based Flow Cytometry data analysis platform. Maintainer of public APIs including [Cytobank public API](https://developer.cytobank.org/) and [Cytobank API Wrapper for R](https://cran.rstudio.com/web/packages/CytobankAPI/index.html).',
-        techStack: 'Backbone.js, Marionette.js, Ruby on Rails, AWS (S3, Lambda, API Gateway, DynamoDB, Step Functions), Plotly.js',
+        description:
+          'Cytobank is a cloud-based Flow Cytometry data analysis platform. Maintainer of public APIs including [Cytobank public API](https://developer.cytobank.org/) and [Cytobank API Wrapper for R](https://cran.rstudio.com/web/packages/CytobankAPI/index.html).',
+        techStack:
+          'Backbone.js, Marionette.js, Ruby on Rails, AWS (S3, Lambda, API Gateway, DynamoDB, Step Functions), Plotly.js',
         highlights: [
           'Cloud-based file upload architecture using serverless AWS services with real-time progress tracking',
           'Front-end development with responsive UI design and cross-browser compatibility',
@@ -84,8 +91,10 @@ export function Resume() {
       {
         duration: 'May, 2018 – August, 2018',
         name: 'Code Editor',
-        description: '[Zowe Code Editor](https://github.com/zowe/zlux-editor), a plug-in of Zowe running on IBM mainframe.',
-        techStack: 'TypeScript, React, Node.js, Monaco Editor, Language Server Protocol',
+        description:
+          '[Zowe Code Editor](https://github.com/zowe/zlux-editor), a plug-in of Zowe running on IBM mainframe.',
+        techStack:
+          'TypeScript, React, Node.js, Monaco Editor, Language Server Protocol',
         highlights: [
           'Responsible for front-end architecture design and Node.js application development with modular, scalable structure',
           'Developed core engine, file system abstraction layer, and extensible menu system using design patterns',
@@ -214,7 +223,11 @@ export function Resume() {
                 </a>
               </div>
               <div>
-                <a href={resumeData.personalInfo.website} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={resumeData.personalInfo.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {resumeData.personalInfo.website}
                 </a>
               </div>

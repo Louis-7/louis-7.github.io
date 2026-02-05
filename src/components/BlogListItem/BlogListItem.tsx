@@ -21,8 +21,8 @@ export function BlogListItem({ blogItems }: { blogItems: Array<never> }) {
       `${blog.public_reactions_count} reactions`,
     ].join(' · ');
     return (
-      <div key={blog.id} id={blog.id.toString()} className='blog-list-item'>
-        <h5 className='title'>
+      <div key={blog.id} id={blog.id.toString()} className="blog-list-item">
+        <h5 className="title">
           <a href={blog.url}>{blog.title}</a>
         </h5>
         {/* <span className="description">{blog.description}</span> */}

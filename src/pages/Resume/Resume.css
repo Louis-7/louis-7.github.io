@@ -31,7 +31,6 @@
     }
   }
 
-
   .personal-info {
     display: flex;
     flex-direction: column;
@@ -66,14 +65,12 @@
 
       .work-company {
         font-weight: var(--normal-emphasize-weight);
-        ;
       }
 
       .work-position {
         .as {
           color: var(--global-theme-primary-color);
           font-weight: var(--normal-emphasize-weight);
-          ;
           margin-right: 0.5rem;
         }
       }
@@ -131,6 +128,5 @@
         font-size: 1.1rem;
       }
     }
-  }
   }
 }

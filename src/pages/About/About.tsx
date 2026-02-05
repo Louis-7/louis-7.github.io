@@ -45,7 +45,7 @@ export function About() {
           </a>
           <a href="https://dev.to/louis7" target="_blank">
             <img
-              className='dev-to-logo'
+              className="dev-to-logo"
               src="https://media2.dev.to/dynamic/image/quality=100/https://dev-to-uploads.s3.amazonaws.com/uploads/logos/resized_logo_UQww2soKuUsjaOGNB38o.png"
               alt="DEV Community"
             ></img>
@@ -56,7 +56,6 @@ export function About() {
           <a href="mailto:louisgh.cn@gmail.com" target="_blank">
             <Icon type="MailOutlined" className="icon-md"></Icon>
           </a>
-
         </div>
       </div>
     </div>

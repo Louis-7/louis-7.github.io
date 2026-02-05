@@ -10,9 +10,9 @@ const PageCurl: React.FC = () => {
   };
 
   return (
-    <div 
-      className="page-curl-container" 
-      onClick={handleClick} 
+    <div
+      className="page-curl-container"
+      onClick={handleClick}
       title="Go to Farm"
       role="button"
       aria-label="Go to Farm Page"
