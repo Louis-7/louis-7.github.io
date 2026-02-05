@@ -594,25 +594,42 @@ canvas.addEventListener('mousedown', (e) => {
  * INPUT HANDLING
  */
 window.addEventListener('keydown', (e) => {
+  // Use e.code to support IME (Input Method Editor) like Chinese input
+  const keyMap: { [key: string]: string } = {
+    KeyW: 'w',
+    KeyA: 'a',
+    KeyS: 's',
+    KeyD: 'd',
+    ArrowUp: 'ArrowUp',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    Space: ' ',
+    Enter: 'Enter',
+    Escape: 'Escape',
+  };
+
+  const mappedKey = keyMap[e.code] || e.key;
+
   if (
-    gameState.keys.hasOwnProperty(e.key) ||
-    e.key === 'ArrowUp' ||
-    e.key === 'ArrowDown' ||
-    e.key === 'ArrowLeft' ||
-    e.key === 'ArrowRight'
+    gameState.keys.hasOwnProperty(mappedKey) ||
+    mappedKey === 'ArrowUp' ||
+    mappedKey === 'ArrowDown' ||
+    mappedKey === 'ArrowLeft' ||
+    mappedKey === 'ArrowRight'
   ) {
-    gameState.keys[e.key] = true;
+    gameState.keys[mappedKey] = true;
   }
 
   // Close modal with ESC or Space key
-  if ((e.key === 'Escape' || e.key === ' ') && gameState.isModalOpen) {
+  if ((mappedKey === 'Escape' || mappedKey === ' ') && gameState.isModalOpen) {
     closeModal();
     return;
   }
 
   // Interaction triggers
   if (
-    (e.key === ' ' || e.key === 'Enter') &&
+    (mappedKey === ' ' || mappedKey === 'Enter') &&
     !gameState.isModalOpen &&
     gameState.interactionTarget
   ) {
@@ -621,14 +638,30 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
+  // Use e.code to support IME (Input Method Editor) like Chinese input
+  const keyMap: { [key: string]: string } = {
+    KeyW: 'w',
+    KeyA: 'a',
+    KeyS: 's',
+    KeyD: 'd',
+    ArrowUp: 'ArrowUp',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    Space: ' ',
+    Enter: 'Enter',
+  };
+
+  const mappedKey = keyMap[e.code] || e.key;
+
   if (
-    gameState.keys.hasOwnProperty(e.key) ||
-    e.key === 'ArrowUp' ||
-    e.key === 'ArrowDown' ||
-    e.key === 'ArrowLeft' ||
-    e.key === 'ArrowRight'
+    gameState.keys.hasOwnProperty(mappedKey) ||
+    mappedKey === 'ArrowUp' ||
+    mappedKey === 'ArrowDown' ||
+    mappedKey === 'ArrowLeft' ||
+    mappedKey === 'ArrowRight'
   ) {
-    gameState.keys[e.key] = false;
+    gameState.keys[mappedKey] = false;
   }
 });
 
